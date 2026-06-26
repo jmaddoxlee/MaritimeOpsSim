@@ -1,0 +1,35 @@
+# Build folders
+build/
+cmake-build-*/
+out/
+
+# C++ compiled files
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+# Logs and generated files
+logs/*.csv
+logs/*.json
+logs/*.txt
+data/*.db
+data/*.sqlite
+
+# OS files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
