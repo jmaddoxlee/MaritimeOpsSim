@@ -1,8 +1,10 @@
 {
   "missionName": "Search Rescue Demo",
+  "missionType": "search_and_rescue",
   "map": {
     "width": 1200,
-    "height": 800
+    "height": 800,
+    "unit": "meters"
   },
   "usvs": [
     {
@@ -12,14 +14,31 @@
         "y": 650
       },
       "speed": 12,
-      "battery": 100
+      "battery": 100,
+      "signalStrength": 100
     }
   ],
   "waypoints": [
-    { "x": 250, "y": 600 },
-    { "x": 450, "y": 500 },
-    { "x": 650, "y": 400 },
-    { "x": 850, "y": 300 }
+    {
+      "id": "WP-01",
+      "x": 250,
+      "y": 600
+    },
+    {
+      "id": "WP-02",
+      "x": 450,
+      "y": 500
+    },
+    {
+      "id": "WP-03",
+      "x": 650,
+      "y": 400
+    },
+    {
+      "id": "WP-04",
+      "x": 850,
+      "y": 300
+    }
   ],
   "distressBeacon": {
     "id": "BEACON-01",
@@ -36,5 +55,13 @@
       "width": 150,
       "height": 120
     }
-  ]
+  ],
+  "missionRules": {
+    "successCondition": "USV reaches distress beacon",
+    "failureConditions": [
+      "battery reaches 0",
+      "communication lost for too long",
+      "USV enters restricted zone"
+    ]
+  }
 }
