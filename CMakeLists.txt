@@ -8,14 +8,26 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(FetchContent)
 
+FetchContent_Declare(
+    nlohmann_json
+    URL https://github.com/nlohmann/json/archive/refs/tags/v3.11.3.zip
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
 add_library(MaritimeOpsSimCore
     cpp/src/Mission.cpp
+    cpp/src/ScenarioLoader.cpp
     cpp/src/SimulationEngine.cpp
     cpp/src/Vessel.cpp
 )
 
 target_include_directories(MaritimeOpsSimCore PUBLIC
     cpp/include
+)
+
+target_link_libraries(MaritimeOpsSimCore PUBLIC
+    nlohmann_json::nlohmann_json
 )
 
 if (MSVC)

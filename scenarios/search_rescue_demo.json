@@ -1,10 +1,12 @@
 {
-  "missionName": "Search Rescue Demo",
-  "missionType": "search_and_rescue",
-  "description": "Basic search-and-rescue demo mission for Week 3 scenario loading.",
+  "mission": {
+    "name": "Search Rescue Demo",
+    "type": "search_and_rescue",
+    "description": "Basic search-and-rescue demo mission for scenario loading."
+  },
   "map": {
-    "width": 1200,
-    "height": 800,
+    "width": 1200.0,
+    "height": 800.0,
     "unit": "meters"
   },
   "vessels": [
@@ -23,23 +25,31 @@
   "waypoints": [
     {
       "id": "WP-01",
-      "x": 250,
-      "y": 600
+      "position": {
+        "x": 250.0,
+        "y": 600.0
+      }
     },
     {
       "id": "WP-02",
-      "x": 450,
-      "y": 500
+      "position": {
+        "x": 450.0,
+        "y": 500.0
+      }
     },
     {
       "id": "WP-03",
-      "x": 650,
-      "y": 400
+      "position": {
+        "x": 650.0,
+        "y": 400.0
+      }
     },
     {
       "id": "WP-04",
-      "x": 850,
-      "y": 300
+      "position": {
+        "x": 850.0,
+        "y": 300.0
+      }
     }
   ],
   "distressBeacon": {
