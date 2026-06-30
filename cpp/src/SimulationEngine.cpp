@@ -42,7 +42,7 @@ void SimulationEngine::run() {
     mission_.printStatus();
     std::cout << "\n";
 
-    std::cout << "Final vessel state:\n";
+    std::cout << "\nFinal vessel state:\n";
     vessel_.printTelemetry();
 }
 
