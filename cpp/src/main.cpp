@@ -1,6 +1,7 @@
+#include "Vessel.h"
+
 #include <filesystem>
 #include <iostream>
-#include <string>
 
 int main() {
     std::cout << "========================================\n";
@@ -21,6 +22,11 @@ int main() {
         std::cout << "Scenario file not found yet.\n";
         std::cout << "Expected location: scenarios/search_rescue_demo.json\n";
     }
+
+    Vessel vessel("USV-01", Position{100.0, 650.0}, 12.0, 0.0);
+
+    std::cout << "Initial vessel telemetry:\n";
+    vessel.printTelemetry();
 
     std::cout << "\nMaritimeOpsSim started successfully.\n";
 
