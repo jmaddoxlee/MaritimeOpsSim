@@ -9,6 +9,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(MaritimeOpsSim
     cpp/src/main.cpp
     cpp/src/Vessel.cpp
+    cpp/src/Mission.cpp
 )
 
 target_include_directories(MaritimeOpsSim PRIVATE
