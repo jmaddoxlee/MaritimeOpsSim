@@ -20,6 +20,7 @@ class Vessel {
         void setSpeed(double speed);
         void setHeading(double heading);
 
+        void update(double deltaTimeSeconds);
         void printTelemetry() const;
 
     private:

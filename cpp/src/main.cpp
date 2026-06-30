@@ -1,5 +1,6 @@
-#include "Vessel.h"
 #include "Mission.h"
+#include "SimulationEngine.h"
+#include "Vessel.h"
 
 #include <filesystem>
 #include <iostream>
@@ -27,29 +28,10 @@ int main() {
     Mission mission("Search Rescue Demo", "search_and_rescue");
     Vessel vessel("USV-01", Position{100.0, 650.0}, 12.0, 0.0);
 
-    std::cout << "Initial mission status:\n";
-    mission.printStatus();
+    SimulationEngine engine(mission, vessel, 1.0, 10);
+    engine.run();
 
-    std::cout << "\nStarting mission...\n";
-    mission.start();
-
-    mission.update(1.0);
-    mission.update(1.0);
-    mission.update(1.0);
-
-    std::cout << "\nUpdated mission status:\n";
-    mission.printStatus();
-
-    std::cout << "\nInitial vessel telemetry:\n";
-    vessel.printTelemetry();
-
-    std::cout << "\nCompleting mission for Week 2 test...\n";
-    mission.complete();
-
-    std::cout << "\nFinal mission status:\n";
-    mission.printStatus();
-
-    std::cout << "\nMaritimeOpsSim started successfully.\n";
+    std::cout << "\nMaritimeOpsSim finished successfully.\n";
 
     return 0;
 }
