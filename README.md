@@ -83,7 +83,7 @@ Project setup in progress.
 
 ## Roadmap
 
-### Week 1 — Setup, Requirements, Architecture
+### Week 1 — Setup, Requirements, Architecture,
 
 - Create repository
 - Create folder structure
@@ -94,11 +94,31 @@ Project setup in progress.
 
 ### Week 2 — Core C++ Simulation Engine
 
-- Create `SimulationEngine`
-- Create `Mission`
-- Create `Vessel`
-- Add basic simulation loop
-- Print console telemetry
+- Created initial `Vessel` class
+- Added vessel ID, position, speed, and heading
+- Added vessel movement update logic
+- Added basic position updates over simulation time
+- Created initial `Mission` class
+- Added mission name, type, status, and elapsed time
+- Added mission start, update, complete, and fail states
+- Created initial `SimulationEngine` class
+- Connected `SimulationEngine`, `Mission`, and `Vessel`
+- Added a basic time-stepped simulation loop
+- Added console telemetry output for each simulation step
+- Added basic GoogleTest setup
+- Wrote first automated vessel movement test
+
+### Current Demo
+
+The current simulator runs a simple search-and-rescue mission demo from the console.
+
+A vessel starts at:
+
+```text
+x = 100
+y = 650
+speed = 12
+heading = 0 degrees
 
 ### Week 3 — Scenario Loader and Map System
 
@@ -145,3 +165,4 @@ Project setup in progress.
 ## License
 
 License to be added later.
+```

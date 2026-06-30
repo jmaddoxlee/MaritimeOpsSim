@@ -1,21 +1,23 @@
 {
   "missionName": "Search Rescue Demo",
   "missionType": "search_and_rescue",
+  "description": "Basic search-and-rescue demo mission for Week 3 scenario loading.",
   "map": {
     "width": 1200,
     "height": 800,
     "unit": "meters"
   },
-  "usvs": [
+  "vessels": [
     {
       "id": "USV-01",
       "startPosition": {
-        "x": 100,
-        "y": 650
+        "x": 100.0,
+        "y": 650.0
       },
-      "speed": 12,
-      "battery": 100,
-      "signalStrength": 100
+      "speed": 12.0,
+      "heading": 0.0,
+      "battery": 100.0,
+      "signalStrength": 100.0
     }
   ],
   "waypoints": [
@@ -43,17 +45,17 @@
   "distressBeacon": {
     "id": "BEACON-01",
     "position": {
-      "x": 900,
-      "y": 250
+      "x": 900.0,
+      "y": 250.0
     }
   },
   "restrictedZones": [
     {
       "id": "RZ-01",
-      "x": 500,
-      "y": 300,
-      "width": 150,
-      "height": 120
+      "x": 500.0,
+      "y": 300.0,
+      "width": 150.0,
+      "height": 120.0
     }
   ],
   "missionRules": {
