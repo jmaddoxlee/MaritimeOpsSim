@@ -52,13 +52,15 @@
       }
     }
   ],
-  "distressBeacon": {
-    "id": "BEACON-01",
-    "position": {
-      "x": 900.0,
-      "y": 250.0
+  "obstacles": [
+    {
+      "id": "OBS-01",
+      "x": 700.0,
+      "y": 520.0,
+      "width": 120.0,
+      "height": 80.0
     }
-  },
+  ],
   "restrictedZones": [
     {
       "id": "RZ-01",
@@ -68,6 +70,13 @@
       "height": 120.0
     }
   ],
+  "distressBeacon": {
+    "id": "BEACON-01",
+    "position": {
+      "x": 900.0,
+      "y": 250.0
+    }
+  },
   "missionRules": {
     "successCondition": "USV reaches distress beacon",
     "failureConditions": [

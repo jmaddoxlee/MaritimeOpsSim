@@ -16,6 +16,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(nlohmann_json)
 
 add_library(MaritimeOpsSimCore
+    cpp/src/MapGrid.cpp
     cpp/src/Mission.cpp
     cpp/src/ScenarioLoader.cpp
     cpp/src/SimulationEngine.cpp
@@ -57,6 +58,7 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(MaritimeOpsSimTests
     cpp/tests/VesselMovementTest.cpp
+    cpp/tests/ScenarioLoaderTest.cpp
 )
 
 target_link_libraries(MaritimeOpsSimTests PRIVATE

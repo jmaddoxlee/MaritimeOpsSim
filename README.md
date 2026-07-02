@@ -120,10 +120,36 @@ y = 650
 speed = 12
 heading = 0 degrees
 
-### Week 3 — Scenario Loader and Map System
+### Week 3 Progress: Scenario Loader and Map System
 
-- Load mission scenarios from JSON
-- Add map size, waypoints, obstacles, and validation
+Week 3 focused on replacing hardcoded mission setup with file-driven scenario loading.
+
+### Completed
+
+- Created `search_rescue_demo.json`
+- Added structured mission scenario data
+- Loaded mission name and mission type from JSON
+- Loaded map width, height, and unit from JSON
+- Loaded USV ID, start position, speed, heading, battery, and signal strength from JSON
+- Loaded waypoint data from JSON
+- Loaded obstacle data from JSON
+- Loaded restricted zone data from JSON
+- Loaded distress beacon data from JSON
+- Loaded mission rule descriptions from JSON
+- Added `ScenarioData` model structs
+- Added `ScenarioLoader`
+- Added useful scenario validation errors
+- Added basic invalid scenario fixture
+- Added ScenarioLoader GoogleTest coverage
+- Added basic `MapGrid` model
+- Added basic bounds, obstacle, and restricted-zone checks
+
+### Scenario File
+
+The main demo scenario is:
+
+```text
+scenarios/search_rescue_demo.json
 
 ### Week 4 — Raylib 2D Visualization
 
