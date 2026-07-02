@@ -15,9 +15,20 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json)
 
+FetchContent_Declare(
+    raylib
+    GIT_REPOSITORY https://github.com/raysan5/raylib.git
+    GIT_TAG 6.0
+)
+
+set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+FetchContent_MakeAvailable(raylib)
+
 add_library(MaritimeOpsSimCore
     cpp/src/MapGrid.cpp
     cpp/src/Mission.cpp
+    cpp/src/RaylibRenderer.cpp
     cpp/src/ScenarioLoader.cpp
     cpp/src/SimulationEngine.cpp
     cpp/src/Vessel.cpp
@@ -43,6 +54,15 @@ add_executable(MaritimeOpsSim
 
 target_link_libraries(MaritimeOpsSim PRIVATE
     MaritimeOpsSimCore
+)
+
+add_executable(MaritimeOpsSimVisual
+    cpp/src/visual_main.cpp
+)
+
+target_link_libraries(MaritimeOpsSimVisual PRIVATE
+    MaritimeOpsSimCore
+    raylib
 )
 
 enable_testing()

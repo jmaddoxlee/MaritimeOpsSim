@@ -151,10 +151,38 @@ The main demo scenario is:
 ```text
 scenarios/search_rescue_demo.json
 
-### Week 4 — Raylib 2D Visualization
+## Week 4 Progress: Basic Visual Demo
 
-- Add 2D window
-- Draw ocean map, USV, route lines, waypoints, and telemetry panel
+Week 4 introduced the first Raylib-based visual demo for MaritimeOpsSim.
+
+### Completed
+
+- Added `MaritimeOpsSimVisual` executable
+- Added basic Raylib rendering window
+- Drew mission map
+- Drew loaded vessel position
+- Drew waypoints
+- Drew obstacles
+- Drew restricted zones
+- Drew distress beacon
+- Added basic telemetry panel
+- Added mission timer
+- Added basic status text
+- Added screenshot capture using the `S` key
+- Recorded first visual demo clip
+
+### Visual Demo Screenshot
+
+![Week 4 Basic Visual Demo](assets/screenshots/week4_basic_visual.png)
+
+### Run Visual Demo
+
+```bash
+mkdir -p build
+cd build
+cmake ..
+cmake --build .
+./MaritimeOpsSimVisual
 
 ### Week 5 — Path Planning
 
