@@ -1,222 +1,503 @@
 # MaritimeOpsSim
 
-## AI-Assisted Unmanned Surface Vessel Mission Simulator
+## Distributed Maritime Command & Telemetry Platform
 
-MaritimeOpsSim is a C++/Python 2D mission simulation platform that models unmanned surface vessels performing safe search-and-rescue and maritime domain awareness missions with route planning, telemetry generation, communication-loss simulation, anomaly detection, mission risk scoring, replay, and post-mission analysis.
+MaritimeOpsSim is a safe distributed maritime simulation and telemetry platform focused on search-and-rescue, maritime domain awareness, vessel telemetry, mission coordination, real-time dashboard visualization, time-series persistence, automated fault-injection testing, and resilient distributed systems.
 
-## Project Goal
+The project started as a C++/Raylib unmanned surface vessel simulator and is now being expanded into a multi-layer distributed telemetry platform.
 
-The goal of this project is to build a safe, advanced, aerospace/defense-relevant software engineering portfolio project that demonstrates skills in C++ systems programming, mission simulation, 2D tactical visualization, algorithms, telemetry processing, AI-assisted analysis, testing, CI/CD, and professional software delivery.
-
-## Project Scope
-
-MaritimeOpsSim will simulate unmanned surface vessels operating in a coastal maritime environment. The simulator will include mission objectives, route planning, telemetry, communication delays, failure simulation, alerts, AI-assisted anomaly detection, mission risk scoring, and post-mission reports.
+---
 
 ## Safe-Scope Disclaimer
 
-This project is a safe maritime mission simulation platform focused on search-and-rescue, maritime domain awareness, telemetry analysis, and software engineering education.
+This project is a safe software engineering portfolio project focused on simulated maritime search-and-rescue, maritime domain awareness, telemetry processing, command-dashboard visualization, mission monitoring, fault tolerance, and system reliability.
 
-This project does not include weapon targeting, missile guidance, strike planning, combat engagement, fire-control logic, attack optimization, or real-world tactical recommendations.
+This project does **not** include weapon targeting, missile guidance, strike planning, combat engagement, fire-control logic, attack optimization, enemy engagement, or real-world tactical recommendations.
 
-## Planned Features
+The project should be described publicly as a **command-and-telemetry platform**, **mission monitoring platform**, or **distributed maritime telemetry platform**.
 
-- C++20 simulation engine
-- Raylib 2D tactical maritime viewer
-- JSON scenario loader
-- A\* path planning
-- Search-and-rescue mission logic
-- Maritime domain awareness scenarios
-- Telemetry logging
-- SQLite mission database
-- Communication loss and failure simulation
-- Python analysis tools
-- AI anomaly detection
-- Mission risk scoring
-- GoogleTest unit tests
-- Pytest tests
-- GitHub Actions CI pipeline
-- Downloadable desktop release
+---
 
-## Tech Stack
+## Project Goal
 
-| Tool / Language     | Purpose                                     |
-| ------------------- | ------------------------------------------- |
-| C++20               | Core simulation engine                      |
-| CMake               | C++ build system                            |
-| Raylib              | 2D graphical simulation viewer              |
-| GoogleTest          | C++ unit testing                            |
-| Python              | Analysis tools, AI tools, report generation |
-| Pytest              | Python testing                              |
-| SQLite              | Mission and telemetry storage               |
-| scikit-learn        | AI anomaly detection and risk scoring       |
-| pandas / NumPy      | Telemetry data processing                   |
-| matplotlib / Plotly | Charts and reports                          |
-| GitHub Actions      | CI pipeline                                 |
-| Linux / Bash        | Scripts and development workflow            |
-| Docker              | Optional reproducible environment           |
+The goal of MaritimeOpsSim is to build a portfolio-grade distributed maritime telemetry system that demonstrates skills relevant to:
 
-## Initial Architecture
+- Ground Software Engineer
+- Ground Systems Software Engineer
+- Mission Software Engineer
+- C2 Software Engineer
+- Tactical Software Engineer
+- Software Test Engineer
+- Telemetry Software Engineer
+- IoT Backend Engineer
+- IoT Platform Engineer
+- Distributed Systems Engineer
+- HIL Test Software Engineer
+- Industrial IoT / Smart Grid Software Engineer
+- Public Safety Technology Software Engineer
+- High-Performance Networking Software Engineer
+
+This project is designed to show more than basic web application development. It demonstrates C++ systems programming, simulation, networking, telemetry ingestion, distributed architecture, frontend performance, time-series persistence, automated testing, Linux operations, CI/CD, and professional software documentation.
+
+---
+
+## Updated High-Level Architecture
 
 ```text
 Scenario JSON
     ↓
-C++ Simulation Engine
+C++ Simulation Layer
+    - Fleet simulation
+    - Vessel physics loop
+    - Position, heading, speed, fuel, signal state
+    - UDP telemetry emitter
     ↓
-Raylib 2D Viewer
+UDP / Protobuf Telemetry
     ↓
-Telemetry Logs
+C#/.NET Ingestion Layer
+    - UDP listener
+    - Protocol Buffers decoder
+    - System.Threading.Channels pipeline
+    - Vessel state registry
+    - WebSocket broadcaster
+    - TimescaleDB writer
     ↓
-SQLite Mission Database
+WebSocket Stream
     ↓
-Python AI / Analysis Tools
+React + TypeScript Presentation Layer
+    - Live mission dashboard
+    - Canvas or MapLibre rendering
+    - 100 moving vessel icons
+    - Telemetry panel
+    - Alerts and connection health
     ↓
-Mission Reports / Charts
+Python Test & Control Layer
+    - Launch automation
+    - Corrupt packet injection
+    - Socket disconnect tests
+    - Performance monitoring
+    - Pytest verification
     ↓
-GitHub Actions CI
-    ↓
-GitHub Release / Downloadable Build
+Docker / Linux Runtime
+    - Multi-container local deployment
+    - CI-ready architecture
 ```
 
-## Current Status
+---
 
-Project setup in progress.
+## Updated Tech Stack
 
-## Roadmap
+| Layer                  | Technology                | Purpose                                             |
+| ---------------------- | ------------------------- | --------------------------------------------------- |
+| Simulation             | C++20                     | High-performance vessel simulation and physics loop |
+| Build                  | CMake                     | C++ build system                                    |
+| Desktop Visual Demo    | Raylib                    | Local 2D simulation visualization                   |
+| Data Contract          | Protocol Buffers          | Binary telemetry schema across C++ and C#           |
+| Network Transport      | UDP                       | C++ simulation to backend telemetry stream          |
+| Ingestion Backend      | C# / .NET                 | High-performance telemetry receiver and router      |
+| Concurrency            | System.Threading.Channels | Producer-consumer ingestion pipeline                |
+| Backend state registry | ConcurrentDictionary      | Latest vessel state registry.                       |
+| Live Stream            | WebSockets                | Backend to browser real-time updates                |
+| Frontend               | React + TypeScript        | Mission-control dashboard                           |
+| Map Rendering          | MapLibre GL JS or Canvas  | Live vessel visualization                           |
+| Persistence            | TimescaleDB               | Time-series telemetry storage                       |
+| Message broker         | Kafka.                    | Optional future event streaming layer               |
+| Test Automation        | Python + Pytest           | Chaos, integration, and control tests               |
+| Runtime                | Linux + Docker Compose    | Reproducible multi-service environment              |
+| CI/CD                  | GitHub Actions            | Build, test, and verification pipeline              |
 
-### Week 1 — Setup, Requirements, Architecture,
+---
 
-- Create repository
-- Create folder structure
-- Create README
-- Define project goal
-- Write safe-scope disclaimer
-- Create initial requirements and architecture drafts
+## Why Raylib Is Still Used
+
+Raylib remains part of the project as the **local C++ visual demo and debugging viewer**.
+
+Raylib is used for:
+
+- Local desktop visualization
+- Debugging vessel movement
+- Showing the scenario map
+- Drawing waypoints, obstacles, restricted zones, and distress beacon
+- Demonstrating C++ graphics and simulation work
+
+The main distributed dashboard will be built with:
+
+```text
+React + TypeScript
+```
+
+So the final project uses both:
+
+```text
+Raylib = local C++ simulation viewer
+React + TypeScript = real-time distributed telemetry dashboard
+```
+
+---
+
+## Completed Progress
+
+### Week 1 — Setup, Requirements, and Architecture
+
+Completed:
+
+- Created repository
+- Created folder structure
+- Created README
+- Defined initial project goal
+- Added safe-scope disclaimer
+- Created initial architecture direction
 
 ### Week 2 — Core C++ Simulation Engine
+
+Completed:
 
 - Created initial `Vessel` class
 - Added vessel ID, position, speed, and heading
 - Added vessel movement update logic
-- Added basic position updates over simulation time
 - Created initial `Mission` class
 - Added mission name, type, status, and elapsed time
-- Added mission start, update, complete, and fail states
 - Created initial `SimulationEngine` class
 - Connected `SimulationEngine`, `Mission`, and `Vessel`
-- Added a basic time-stepped simulation loop
-- Added console telemetry output for each simulation step
-- Added basic GoogleTest setup
-- Wrote first automated vessel movement test
+- Added basic time-stepped simulation loop
+- Added console telemetry output
+- Added GoogleTest setup
+- Wrote first vessel movement test
 
-### Current Demo
+### Week 3 — Scenario Loader and Map System
 
-The current simulator runs a simple search-and-rescue mission demo from the console.
-
-A vessel starts at:
-
-```text
-x = 100
-y = 650
-speed = 12
-heading = 0 degrees
-
-### Week 3 Progress: Scenario Loader and Map System
-
-Week 3 focused on replacing hardcoded mission setup with file-driven scenario loading.
-
-### Completed
+Completed:
 
 - Created `search_rescue_demo.json`
-- Added structured mission scenario data
-- Loaded mission name and mission type from JSON
-- Loaded map width, height, and unit from JSON
-- Loaded USV ID, start position, speed, heading, battery, and signal strength from JSON
+- Added structured scenario data models
+- Loaded mission data from JSON
+- Loaded map data from JSON
+- Loaded vessel data from JSON
 - Loaded waypoint data from JSON
 - Loaded obstacle data from JSON
 - Loaded restricted zone data from JSON
 - Loaded distress beacon data from JSON
 - Loaded mission rule descriptions from JSON
-- Added `ScenarioData` model structs
 - Added `ScenarioLoader`
-- Added useful scenario validation errors
-- Added basic invalid scenario fixture
-- Added ScenarioLoader GoogleTest coverage
+- Added scenario validation and useful error messages
+- Added invalid scenario fixture
+- Added ScenarioLoader tests
 - Added basic `MapGrid` model
-- Added basic bounds, obstacle, and restricted-zone checks
+- Added bounds, obstacle, and restricted-zone checks
 
-### Scenario File
+### Week 4 — Basic Raylib Visual Demo
 
-The main demo scenario is:
-
-```text
-scenarios/search_rescue_demo.json
-
-## Week 4 Progress: Basic Visual Demo
-
-Week 4 introduced the first Raylib-based visual demo for MaritimeOpsSim.
-
-### Completed
+Completed:
 
 - Added `MaritimeOpsSimVisual` executable
-- Added basic Raylib rendering window
+- Added Raylib rendering window
 - Drew mission map
-- Drew loaded vessel position
+- Drew vessel position
 - Drew waypoints
 - Drew obstacles
 - Drew restricted zones
 - Drew distress beacon
-- Added basic telemetry panel
+- Added telemetry panel
 - Added mission timer
 - Added basic status text
-- Added screenshot capture using the `S` key
+- Added screenshot capture
 - Recorded first visual demo clip
 
-### Visual Demo Screenshot
+---
 
-![Week 4 Basic Visual Demo](assets/screenshots/week4_basic_visual.png)
+## New Distributed Platform Roadmap
 
-### Run Visual Demo
+### Phase 0 — Rebrand and Architecture Reset
+
+Goal:
+
+Update README, documentation, folders, architecture, and project scope before distributed systems coding.
+
+Deliverables:
+
+- `docs/architecture.md`
+- `docs/safe_scope.md`
+- `docs/telemetry_contract.md`
+- `docs/study_plan.md`
+- `proto/vessel_telemetry.proto`
+- `backend/MaritimeOps.Ingestion/`
+- `frontend/maritime-dashboard/`
+- `database/migrations/`
+- `database/queries/`
+- `python/control/`
+- `docker-compose.yml`
+
+### Phase 1 — C++ Fleet Simulation and UDP Telemetry
+
+Goal:
+
+Upgrade from one visual vessel to a headless fleet simulation that can produce telemetry for 100 vessels.
+
+Build:
+
+- `VesselState` runtime model
+- `FleetSimulationEngine`
+- 100 simulated vessels
+- Fixed timestep loop
+- Fuel burn model
+- Heading and velocity updates
+- Signal strength state
+- Headless simulation mode
+- UDP telemetry sender
+- Simple binary payload first
+- Protobuf payload later
+
+### Phase 2 — C#/.NET Ingestion Engine
+
+Goal:
+
+Build the backend service that receives, decodes, and routes C++ telemetry.
+
+Build:
+
+- `UdpTelemetryReceiver`
+- `PacketDecoder`
+- `VesselStateRegistry`
+- `Channel<byte[]>` ingestion pipeline
+- Background worker services
+- Structured console logs
+- Packet counters
+- Dropped packet counters
+- Bad packet quarantine
+- WebSocket broadcaster
+
+### Phase 3 — Protobuf Telemetry Contract
+
+Goal:
+
+Create a stable binary telemetry contract between C++ and C#.
+
+Build:
+
+- `proto/vessel_telemetry.proto`
+- C++ generated telemetry types
+- C# generated telemetry types
+- C++ serializer
+- C# decoder
+- Valid packet tests
+- Invalid packet tests
+
+### Phase 4 — React Mission Dashboard
+
+Goal:
+
+Display 100 moving vessels smoothly in a browser dashboard.
+
+Build:
+
+- React + TypeScript dashboard
+- WebSocket client
+- Canvas or MapLibre map
+- Vessel icon rendering
+- Telemetry side panel
+- Connection status
+- Alert list
+- `useRef`-based fast telemetry store
+- `requestAnimationFrame` render loop
+
+### Phase 5 — TimescaleDB Telemetry Persistence
+
+Goal:
+
+Save telemetry history and query it efficiently.
+
+Build:
+
+- TimescaleDB container
+- `vessel_telemetry` table
+- Hypertable
+- Backend database writer
+- Latest vessel query
+- Average speed query
+- Fuel trend query
+- Database integration tests
+
+### Phase 6 — Python Test and Control Layer
+
+Goal:
+
+Prove system resilience through fault injection and integration testing.
+
+Build:
+
+- `launch_cpp_sim.py`
+- `launch_backend.py`
+- `packet_fuzzer.py`
+- `corrupt_packet_sender.py`
+- `disconnect_test.py`
+- `performance_monitor.py`
+- `socket_flood_test.py`
+- `stale_vessel_test.py`
+
+### Phase 7 — Docker, Linux, CI, and Portfolio Polish
+
+Goal:
+
+Turn the project into a portfolio-grade distributed system.
+
+Build:
+
+- `docker-compose.yml`
+- C++ simulation container
+- C# backend container
+- React frontend container
+- TimescaleDB container
+- Python test-runner container
+- GitHub Actions CI
+- Architecture diagram
+- Performance report
+- Failure-mode document
+- Demo video
+- Resume bullets
+- Interview script
+
+---
+
+## Target End-to-End Demo
+
+The final distributed demo should prove this flow:
+
+```text
+C++ fleet simulation
+    ↓ UDP / Protobuf
+C#/.NET ingestion backend
+    ↓ WebSocket
+React + TypeScript dashboard
+    ↓
+TimescaleDB telemetry history
+    ↓
+Python chaos and integration tests
+```
+
+---
+
+## Repository Structure
+
+```text
+MaritimeOpsSim/
+│
+├── cpp/
+│   ├── src/
+│   ├── include/
+│   └── tests/
+│
+├── proto/
+│
+├── backend/
+│   └── MaritimeOps.Ingestion/
+│
+├── frontend/
+│   └── maritime-dashboard/
+│
+├── database/
+│   ├── migrations/
+│   └── queries/
+│
+├── python/
+│   ├── control/
+│   └── tests/
+│
+├── scenarios/
+│
+├── assets/
+│   ├── screenshots/
+│   └── demo/
+│
+├── docs/
+│
+├── scripts/
+│
+├── .github/
+│   └── workflows/
+│
+├── docker-compose.yml
+├── CMakeLists.txt
+├── README.md
+└── LICENSE
+```
+
+---
+
+## How to Build Current C++ Project
 
 ```bash
 mkdir -p build
 cd build
 cmake ..
 cmake --build .
-./MaritimeOpsSimVisual
-
-### Week 5 — Path Planning
-
-- Implement BFS and A\* pathfinding
-
-### Week 6 — Mission Logic
-
-- Add search-and-rescue objective, distress beacon, mission scoring, and success/failure logic
-
-### Week 7 — Telemetry Logging and SQLite
-
-- Persist mission and telemetry data
-
-### Week 8 — Communication Loss and Failure Simulation
-
-- Add heartbeat, signal loss, communication delay, low battery, and alerts
-
-### Week 9 — Python Analysis Tools
-
-- Parse logs, generate mission reports, and create charts
-
-### Week 10 — AI Anomaly Detection and Mission Risk Scoring
-
-- Detect abnormal telemetry patterns and generate risk score
-
-### Week 11 — Testing, CI, and Reliability
-
-- Add GoogleTest, Pytest, and GitHub Actions
-
-### Week 12 — Demo, Documentation, and Release
-
-- Add demo video, screenshots, release package, and resume bullets
-
-## License
-
-License to be added later.
 ```
+
+---
+
+## How to Run Current Console Demo
+
+```bash
+cd build
+./MaritimeOpsSim
+```
+
+---
+
+## How to Run Current Raylib Visual Demo
+
+```bash
+cd build
+./MaritimeOpsSimVisual
+```
+
+---
+
+## How to Run Current Tests
+
+```bash
+cd build
+ctest --output-on-failure
+```
+
+---
+
+## Current Status
+
+MaritimeOpsSim currently has:
+
+- C++ simulation foundation
+- Scenario loading from JSON
+- Map, obstacle, restricted-zone, and distress-beacon loading
+- GoogleTest coverage
+- Raylib visual demo
+- Basic telemetry panel
+- Mission timer
+- Status text
+
+Next milestone:
+
+```text
+Phase 1 — C++ Fleet Simulation and UDP Telemetry
+```
+
+---
+
+## Resume Direction
+
+### Short Version
+
+Built MaritimeOpsSim, a distributed maritime command-and-telemetry platform that simulates safe search-and-rescue vessel operations, streams live telemetry, visualizes mission state, and validates system resilience through automated testing.
+
+### Strong Version
+
+Developed MaritimeOpsSim, a distributed maritime telemetry platform with a C++20 fleet simulation engine, UDP telemetry streaming, C#/.NET ingestion pipeline, React/TypeScript mission dashboard, TimescaleDB persistence, Python chaos tests, Docker Compose orchestration, and CI automation.
+
+---
+
+## Interview Pitch
+
+I built MaritimeOpsSim, a safe distributed maritime command-and-telemetry platform. It started as a C++20 unmanned surface vessel simulator with Raylib visualization and JSON scenario loading. I expanded it into a distributed telemetry system where the C++ simulation layer produces live vessel state, streams telemetry over UDP, and a C#/.NET backend ingests, decodes, and routes that data through asynchronous producer-consumer pipelines.
+
+The backend maintains latest vessel state, broadcasts updates to a React/TypeScript dashboard over WebSockets, and persists telemetry history into TimescaleDB. I also added Python-based chaos tests that inject corrupted packets, simulate disconnects, and verify that the backend isolates faults instead of crashing.
+
+The project is intentionally safe-scoped around search-and-rescue, maritime domain awareness, telemetry processing, and system reliability. It does not include targeting, fire control, strike planning, or real-world tactical recommendations.
