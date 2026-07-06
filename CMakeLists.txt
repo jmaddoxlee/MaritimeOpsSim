@@ -26,6 +26,7 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
 add_library(MaritimeOpsSimCore
+    cpp/src/FleetGeneration.cpp
     cpp/src/FleetSimulationEngine.cpp
     cpp/src/MapGrid.cpp
     cpp/src/Mission.cpp

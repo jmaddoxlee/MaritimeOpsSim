@@ -1,7 +1,10 @@
+#include "FleetGeneration.h"
 #include "FleetSimulationEngine.h"
 #include "VesselState.h"
 
 #include <gtest/gtest.h>
+#include <set>
+#include <vector>
 
 TEST(FleetSimulationEngineTest, VesselStateCanBeAggregateInitialized) {
     VesselState vessel{
@@ -134,4 +137,47 @@ TEST(FleetSimulationEngineTest, UpdateIgnoresNonPositiveDeltaTime) {
 
     EXPECT_DOUBLE_EQ(vessel.position.x, 0.0);
     EXPECT_DOUBLE_EQ(vessel.position.y, 0.0);
+}
+
+TEST(FleetSimulationEngineTest, CreateSampleFleetCreatesRequestedCount) {
+    std::vector<VesselState> vessels = createSampleFleet(100);
+
+    EXPECT_EQ(vessels.size(), 100);
+}
+
+TEST(FleetSimulationEngineTest, CreateSampleFleetGenerateUniqueIds) {
+    std::vector<VesselState> vessels = createSampleFleet(100);
+
+    std::set<std::string> ids;
+
+    for (const VesselState& vessel : vessels) {
+        ids.insert(vessel.id);
+    }
+
+    EXPECT_EQ(ids.size(), 100);
+    EXPECT_EQ(vessels.at(0).id, "VESSEL-001");
+    EXPECT_EQ(vessels.at(99).id, "VESSEL-100");
+}
+
+TEST(FleetSimulationEngineTest, CreateSampleFleetGenerateSpreadOutPositions) {
+    const std::vector<VesselState> vessels = createSampleFleet(100);
+
+    EXPECT_DOUBLE_EQ(vessels.at(0).position.x, 50.0);
+    EXPECT_DOUBLE_EQ(vessels.at(0).position.y, 50.0);
+
+    EXPECT_DOUBLE_EQ(vessels.at(1).position.x, 75.0);
+    EXPECT_DOUBLE_EQ(vessels.at(1).position.y, 50.0);
+
+    EXPECT_DOUBLE_EQ(vessels.at(10).position.x, 50.0);
+    EXPECT_DOUBLE_EQ(vessels.at(10).position.y, 75.0);
+}
+
+TEST(FleetSimulationEngineTest, FleetSimulationEngineAcceptsGeneratedFleet) {
+    const std::vector<VesselState> vessels = createSampleFleet(100);
+
+    FleetSimulationEngine engine{vessels};
+
+    EXPECT_EQ(engine.getVessels().size(), 100);
+    EXPECT_EQ(engine.getVessels().at(0).id, "VESSEL-001");
+    EXPECT_EQ(engine.getVessels().at(99).id, "VESSEL-100");
 }

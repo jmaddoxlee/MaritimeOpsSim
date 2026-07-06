@@ -1,0 +1,59 @@
+{
+  "mission": {
+    "name": "Fleet 100 Vessels Demo",
+    "type": "search_and_rescue",
+    "description": "Demo scenario for generating and simulating 100 safe maritime telemetry vessels."
+  },
+  "map": {
+    "width": 1000,
+    "height": 700
+  },
+  "fleetGeneration": {
+    "enabled": true,
+    "vesselCount": 100,
+    "idPrefix": "VESSEL",
+    "startingId": 1,
+    "gridColumns": 10,
+    "startX": 50.0,
+    "startY": 50.0,
+    "spacingX": 25.0,
+    "spacingY": 25.0
+  },
+  "vessels": [
+    {
+      "id": "VESSEL-TEMPLATE",
+      "startPosition": {
+        "x": 50.0,
+        "y": 50.0
+      },
+      "speed": 5.0,
+      "heading": 0.0,
+      "battery": 100.0,
+      "signalStrength": 1.0
+    }
+  ],
+  "waypoints": [
+    {
+      "id": "WP-001",
+      "position": {
+        "x": 850.0,
+        "y": 550.0
+      }
+    }
+  ],
+  "obstacles": [],
+  "restrictedZones": [],
+  "distressBeacon": {
+    "id": "BEACON-001",
+    "position": {
+      "x": 850.0,
+      "y": 550.0
+    }
+  },
+  "missionRules": [
+    "This scenario is for safe search-and-rescue telemetry simulation only.",
+    "Generate 100 runtime vessels with unique IDs.",
+    "Spread starting positions across a grid.",
+    "Do not include weapon targeting, combat engagement, or real-world tactical recommendations."
+  ]
+}
