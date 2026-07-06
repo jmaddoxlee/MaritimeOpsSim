@@ -77,6 +77,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_executable(MaritimeOpsSimTests
+    cpp/tests/FleetSimulationEngineTest.cpp
     cpp/tests/VesselMovementTest.cpp
     cpp/tests/ScenarioLoaderTest.cpp
 )
