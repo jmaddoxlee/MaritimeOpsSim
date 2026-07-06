@@ -1,0 +1,13 @@
+# MaritimeOpsSim Docker Compose placeholder
+#
+# Planned services:
+# - cpp-sim
+# - ingestion-api
+# - maritime-dashboard
+# - timescaledb
+# - python-test-runner
+#
+# This file will be expanded after the C++ UDP telemetry producer,
+# C# ingestion backend, React dashboard, and TimescaleDB integration exist.
+
+services: {}
