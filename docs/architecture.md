@@ -239,6 +239,101 @@ The backend should keep the core telemetry model separate from UDP, WebSocket, a
 
 ---
 
+### Configuration vs Runtime State
+
+The simulation layer separates scenario configuration from live runtime state.
+
+````text
+ScenarioData / VesselConfig = loaded setup from JSON
+VesselState = live state updated every simulation tick
+FleetSimulationEngine = owns and updates VesselState objects
+
+## VesselState Runtime Model
+
+`VesselState` represents the live runtime state of a simulated vessel.
+
+It is intentionally separate from the original `Vessel` class because the fleet simulation needs a lightweight data model that can be updated, stored, tested, and later serialized into telemetry messages.
+
+```cpp
+struct VesselState {
+    std::string id;
+    Position position;
+    double speed;
+    double heading;
+    double fuel;
+    double signalStrength;
+    bool active;
+};
+```
+
+### Purpose
+
+`VesselState` answers the question:
+
+```text
+What is happening to this vessel right now?
+```
+
+It stores the current values that change during simulation, including location, speed, heading, fuel level, signal strength, and whether the vessel is active.
+
+### Field Responsibilities
+
+| Field            | Purpose                                                           |
+| ---------------- | ----------------------------------------------------------------- |
+| `id`             | Unique vessel identifier such as `VESSEL-001`                     |
+| `position`       | Current x/y location of the vessel in the simulation map          |
+| `speed`          | Current vessel speed used by the simulation update loop           |
+| `heading`        | Current travel direction in degrees                               |
+| `fuel`           | Current simulated fuel or energy level                            |
+| `signalStrength` | Simulated communication/signal quality                            |
+| `active`         | Whether the vessel should be updated by the fleet simulation loop |
+
+### Relationship to Vessel
+
+The original `Vessel` class is still used by the earlier single-vessel simulation and visual demo.
+
+`VesselState` is used by the newer fleet simulation layer.
+
+| Model         | Role                                                                                          |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| `Vessel`      | Original object-oriented vessel model with behavior such as `update()` and `printTelemetry()` |
+| `VesselState` | Lightweight runtime data structure for fleet simulation and future telemetry serialization    |
+
+This separation keeps the new fleet simulation simple and efficient. The fleet engine can store many `VesselState` objects in a contiguous `std::vector`, update them in a loop, and later send their data through the telemetry pipeline.
+
+### Relationship to FleetSimulationEngine
+
+`FleetSimulationEngine` owns a collection of `VesselState` objects.
+
+```text
+std::vector<VesselState>
+```
+
+During each simulation update, the engine loops through the vessels and updates active vessels based on their speed, heading, and elapsed time.
+
+```text
+FleetSimulationEngine
+    owns many VesselState objects
+    updates each active vessel
+    exposes read-only access through getVessels()
+```
+
+The simulation layer does not send UDP packets yet. It only updates runtime state. Telemetry transport will be added later as a separate responsibility.
+
+### Why This Design Matters
+
+This design supports the distributed architecture goal by separating responsibilities:
+
+| Responsibility                 | Component               |
+| ------------------------------ | ----------------------- |
+| Runtime vessel data            | `VesselState`           |
+| Fleet update loop              | `FleetSimulationEngine` |
+| Fleet sample generation        | `createSampleFleet()`   |
+| Future telemetry serialization | Protobuf message layer  |
+| Future telemetry transport     | UDP sender              |
+
+Keeping `VesselState` simple makes it easier to test, serialize, and reuse across the simulation and telemetry layers.
+
 ## 4. React + TypeScript Presentation Layer
 
 The React dashboard is the main distributed-system visualization layer.
@@ -277,7 +372,7 @@ Important frontend design decision:
 Do not store every telemetry frame in React state.
 Use useRef for high-frequency vessel state.
 Use requestAnimationFrame for drawing.
-```
+````
 
 ---
 
