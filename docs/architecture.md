@@ -334,6 +334,22 @@ This design supports the distributed architecture goal by separating responsibil
 
 Keeping `VesselState` simple makes it easier to test, serialize, and reuse across the simulation and telemetry layers.
 
+### Console / Headless Fleet Simulation Mode
+
+The fleet simulation should support a console/headless mode before UDP telemetry is added.
+
+The purpose of headless mode is to run the C++ simulation without Raylib or a visual window. This allows the fleet engine to be tested, profiled, and later connected to UDP telemetry in a clean way.
+
+Planned behavior:
+
+```text
+HeadlessFleetSimulationApp
+    creates sample fleet using createSampleFleet(100)
+    passes vessels into FleetSimulationEngine
+    runs fixed timestep update loop
+    prints periodic fleet summaries to console
+    later sends VesselState snapshots to UDP telemetry sender
+
 ## 4. React + TypeScript Presentation Layer
 
 The React dashboard is the main distributed-system visualization layer.

@@ -14,6 +14,8 @@ class FleetSimulationEngine {
 
     private:
         static void updateVesselPosition(VesselState& vessel, double deltaTimeSeconds);
+        static void updateVesselFuel(VesselState& vessel, double deltaTimeSeconds);
+        static void udpateSignalStrength(VesselState& vessel, double deltaTimeSeconds);
 
         std::vector<VesselState> vessels_;
 };

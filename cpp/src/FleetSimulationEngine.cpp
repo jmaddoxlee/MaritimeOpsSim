@@ -5,6 +5,8 @@
 
 namespace {
     constexpr double kPi = 3.14159265358979323846;
+
+    constexpr double kFuelBurnRatePerSpeedUnitPerSecond = 0.05;
 }
 
 FleetSimulationEngine::FleetSimulationEngine(std::vector<VesselState> vessels)
@@ -22,6 +24,8 @@ void FleetSimulationEngine::update(double deltaTimeSeconds) {
         }
 
         updateVesselPosition(vessel, deltaTimeSeconds);
+        updateVesselFuel(vessel, deltaTimeSeconds);
+        udpateSignalStrength(vessel, deltaTimeSeconds);
     }
 }
 
@@ -37,4 +41,22 @@ void FleetSimulationEngine::updateVesselPosition(
 
     vessel.position.x += std::cos(headingRadians) * vessel.speed * deltaTimeSeconds;
     vessel.position.y += std::sin(headingRadians) * vessel.speed * deltaTimeSeconds; 
+}
+
+void FleetSimulationEngine::updateVesselFuel(
+    VesselState& vessel,
+    double deltaTimeSeconds
+) {
+    const double fuelBurn = 
+        vessel.speed * kFuelBurnRatePerSpeedUnitPerSecond * deltaTimeSeconds;
+
+    vessel.fuel = std::max(0.0, vessel.fuel - fuelBurn);
+}
+
+void FleetSimulationEngine::udpateSignalStrength(
+    VesselState& vessel,
+    double deltaTimeSeconds
+) {
+    (void)vessel;
+    (void)deltaTimeSeconds;
 }

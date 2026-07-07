@@ -62,7 +62,7 @@ TEST(FleetSimulationEngineTest, ConstructorStoresVessels) {
         }
     };
 
-    FleetSimulationEngine engine{vessels};
+    FleetSimulationEngine engine{std::move(vessels)};
 
     EXPECT_EQ(engine.getVessels().size(), 2);
     EXPECT_EQ(engine.getVessels().at(0).id, "usv-001");
@@ -82,7 +82,7 @@ TEST(FleetSimulationEngineTest, UpdateMovesActiveVessels) {
         }
     };
 
-    FleetSimulationEngine engine{vessels};
+    FleetSimulationEngine engine{std::move(vessels)};
 
     engine.update(1.0);
 
@@ -105,7 +105,7 @@ TEST(FleetSimulationEngineTest, UpdateSkipsInactiveVessels) {
         }
     };
 
-    FleetSimulationEngine engine{vessels};
+    FleetSimulationEngine engine{std::move(vessels)};
 
     engine.update(1.0);
 
@@ -128,7 +128,7 @@ TEST(FleetSimulationEngineTest, UpdateIgnoresNonPositiveDeltaTime) {
         }
     };
 
-    FleetSimulationEngine engine{vessels};
+    FleetSimulationEngine engine{std::move(vessels)};
 
     engine.update(0.0);
     engine.update(-1.0);
@@ -175,9 +175,99 @@ TEST(FleetSimulationEngineTest, CreateSampleFleetGenerateSpreadOutPositions) {
 TEST(FleetSimulationEngineTest, FleetSimulationEngineAcceptsGeneratedFleet) {
     const std::vector<VesselState> vessels = createSampleFleet(100);
 
-    FleetSimulationEngine engine{vessels};
+    FleetSimulationEngine engine{std::move(vessels)};
 
     EXPECT_EQ(engine.getVessels().size(), 100);
     EXPECT_EQ(engine.getVessels().at(0).id, "VESSEL-001");
     EXPECT_EQ(engine.getVessels().at(99).id, "VESSEL-100");
+}
+
+TEST(FleetSimulationEngineTest, FuelDecreasesAfterUpdate) {
+    std::vector<VesselState> vessels{
+        VesselState{
+            "usv-001",
+            Position{0.0, 0.0},
+            10.0,
+            0.0,
+            100.0,
+            1.0,
+            true
+        }
+    };
+
+    FleetSimulationEngine engine{std::move(vessels)};
+
+    engine.update(2.0);
+
+    const VesselState& vessel = engine.getVessels().at(0);
+
+    EXPECT_DOUBLE_EQ(vessel.fuel, 99.0);
+}
+
+TEST(FleetSimulationEngineTest, FuelNeverGoesBelowZero) {
+    std::vector<VesselState> vessels{
+        VesselState{
+            "VESSEL-001",
+            Position{0.0, 0.0},
+            1000.0,
+            0.0,
+            0.5,
+            1.0,
+            true
+        }
+    };
+
+    FleetSimulationEngine engine{std::move(vessels)};
+
+    engine.update(10.0);
+
+    const VesselState& vessel = engine.getVessels().at(0);
+
+    EXPECT_DOUBLE_EQ(vessel.fuel, 0.0);
+}
+
+TEST(FleetSimulationEngineTest, InactiveVesselDoesNotMoveOrBurnFuel) {
+    std::vector<VesselState> vessels{
+        VesselState{
+            "VESSEL-001",
+            Position{10.0, 20.0},
+            10.0,
+            0.0,
+            100.0,
+            1.0,
+            false
+        }
+    };
+
+    FleetSimulationEngine engine{std::move(vessels)};
+
+    engine.update(5.0);
+
+    const VesselState& vessel = engine.getVessels().at(0);
+
+    EXPECT_DOUBLE_EQ(vessel.position.x, 10.0);
+    EXPECT_DOUBLE_EQ(vessel.position.y, 20.0);
+    EXPECT_DOUBLE_EQ(vessel.fuel, 100.0);
+}
+
+TEST(FleetSimulationEngineTest, SignalStrengthRemainsFixedForNow) {
+    std::vector<VesselState> vessels{
+        VesselState{
+            "VESSEL-001",
+            Position{0.0, 0.0},
+            10.0,
+            0.0,
+            100.0,
+            0.75,
+            true
+        }
+    };
+
+    FleetSimulationEngine engine{vessels};
+
+    engine.update(5.0);
+
+    const VesselState& vessel = engine.getVessels().at(0);
+
+    EXPECT_DOUBLE_EQ(vessel.signalStrength, 0.75);
 }
