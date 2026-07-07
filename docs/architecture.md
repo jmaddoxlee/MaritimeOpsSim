@@ -243,10 +243,24 @@ The backend should keep the core telemetry model separate from UDP, WebSocket, a
 
 The simulation layer separates scenario configuration from live runtime state.
 
-````text
+```text
 ScenarioData / VesselConfig = loaded setup from JSON
 VesselState = live state updated every simulation tick
 FleetSimulationEngine = owns and updates VesselState objects
+```
+
+`ScenarioData` and `VesselConfig` describe how a scenario should start. They come from JSON configuration files and should not change every simulation tick.
+
+`VesselState` describes what is happening to a vessel right now during runtime. It changes as the simulation updates position, speed, heading, fuel, signal strength, and active status.
+
+`FleetSimulationEngine` owns a collection of `VesselState` objects and updates them in a loop.
+
+| Model                   | Purpose                                      | Changes During Simulation? |
+| ----------------------- | -------------------------------------------- | -------------------------- |
+| `ScenarioData`          | Full scenario configuration loaded from JSON | No                         |
+| `VesselConfig`          | Starting setup for a vessel                  | No                         |
+| `VesselState`           | Live runtime state of a vessel               | Yes                        |
+| `FleetSimulationEngine` | Updates many vessel states                   | Yes                        |
 
 ## VesselState Runtime Model
 
@@ -338,7 +352,9 @@ Keeping `VesselState` simple makes it easier to test, serialize, and reuse acros
 
 The fleet simulation should support a console/headless mode before UDP telemetry is added.
 
-The purpose of headless mode is to run the C++ simulation without Raylib or a visual window. This allows the fleet engine to be tested, profiled, and later connected to UDP telemetry in a clean way.
+Headless mode means the simulation runs without a Raylib visual window or graphical interface. It runs in the terminal and prints summary output instead of drawing vessels on screen.
+
+The purpose of headless mode is to test and run the fleet simulation without depending on the visual renderer. This allows the fleet engine to be tested, profiled, and later connected to UDP telemetry in a clean way.
 
 Planned behavior:
 
@@ -349,6 +365,60 @@ HeadlessFleetSimulationApp
     runs fixed timestep update loop
     prints periodic fleet summaries to console
     later sends VesselState snapshots to UDP telemetry sender
+```
+
+Initial console output should stay simple:
+
+```text
+tick=0 totalVessels=100 firstVessel=VESSEL-001 position=(50.00, 50.00) avgFuel=100.00
+tick=1 totalVessels=100 firstVessel=VESSEL-001 position=(55.00, 50.00) avgFuel=99.65
+tick=2 totalVessels=100 firstVessel=VESSEL-001 position=(60.00, 50.00) avgFuel=99.30
+```
+
+This mode keeps the simulation layer separate from presentation concerns.
+
+Raylib remains the local visual demo.
+
+Headless mode becomes the future source for UDP telemetry emission.
+
+### Planned CLI Modes
+
+The simulator will eventually support simple command-line options for choosing visual or headless execution.
+
+Planned flags:
+
+```text
+--visual
+--headless
+--vessels 100
+--duration 60
+```
+
+Initial examples:
+
+```bash
+./MaritimeOpsSim --visual
+./MaritimeOpsSim --headless --vessels 100 --duration 60
+```
+
+The first implementation should not overbuild CLI parsing. The immediate goal is only to separate the idea of visual mode from headless mode.
+
+For now:
+
+```text
+--visual   = future flag for Raylib local visual demo
+--headless = future flag for console-only fleet simulation
+--vessels  = future flag for selecting fleet size
+--duration = future flag for selecting simulation duration in seconds
+```
+
+The first headless implementation may use hard-coded defaults internally:
+
+```text
+vessels = 100
+duration = 60 seconds
+deltaTime = 1 second
+```
 
 ## 4. React + TypeScript Presentation Layer
 
@@ -388,7 +458,7 @@ Important frontend design decision:
 Do not store every telemetry frame in React state.
 Use useRef for high-frequency vessel state.
 Use requestAnimationFrame for drawing.
-````
+```
 
 ---
 

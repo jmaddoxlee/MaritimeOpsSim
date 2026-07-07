@@ -30,7 +30,6 @@ add_library(MaritimeOpsSimCore
     cpp/src/FleetSimulationEngine.cpp
     cpp/src/MapGrid.cpp
     cpp/src/Mission.cpp
-    cpp/src/RaylibRenderer.cpp
     cpp/src/ScenarioLoader.cpp
     cpp/src/SimulationEngine.cpp
     cpp/src/Vessel.cpp
@@ -60,11 +59,20 @@ target_link_libraries(MaritimeOpsSim PRIVATE
 
 add_executable(MaritimeOpsSimVisual
     cpp/src/visual_main.cpp
+    cpp/src/RaylibRenderer.cpp
 )
 
 target_link_libraries(MaritimeOpsSimVisual PRIVATE
     MaritimeOpsSimCore
     raylib
+)
+
+add_executable(MaritimeOpsSimHeadless
+    cpp/apps/HeadlessFleetSimulationApp.cpp
+)
+
+target_link_libraries(MaritimeOpsSimHeadless PRIVATE
+    MaritimeOpsSimCore
 )
 
 enable_testing()
