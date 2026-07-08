@@ -32,6 +32,7 @@ add_library(MaritimeOpsSimCore
     cpp/src/Mission.cpp
     cpp/src/ScenarioLoader.cpp
     cpp/src/SimulationEngine.cpp
+    cpp/src/TelemetryPacketBuilder.cpp
     cpp/src/Vessel.cpp
 )
 
@@ -88,8 +89,9 @@ FetchContent_MakeAvailable(googletest)
 
 add_executable(MaritimeOpsSimTests
     cpp/tests/FleetSimulationEngineTest.cpp
-    cpp/tests/VesselMovementTest.cpp
     cpp/tests/ScenarioLoaderTest.cpp
+    cpp/tests/TelemetryPacketBuilderTest.cpp
+    cpp/tests/VesselMovementTest.cpp
 )
 
 target_link_libraries(MaritimeOpsSimTests PRIVATE
