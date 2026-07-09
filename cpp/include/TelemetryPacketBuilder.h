@@ -25,6 +25,14 @@ class TelemetryPacketBuilder {
             std::uint64_t timestampUnixMs
         );
 
+        static std::vector<std::uint8_t> buildPacketWithGeneratedMetadata(
+            const VesselState& vessel
+        );
+
+        static std::uint64_t nextSequenceNumber();
+
+        static std::uint64_t currentTimestampUnixMs();
+
         static std::uint32_t buildStatusFlags(const VesselState& vessel);
 
         static std::uint32_t extractVesselNumericId(const std::string& vesselId);

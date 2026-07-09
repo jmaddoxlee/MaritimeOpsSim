@@ -1,6 +1,8 @@
 #include "TelemetryPacketBuilder.h"
 
+#include <atomic>
 #include <bit>
+#include <chrono>
 #include <cctype>
 #include <limits>
 #include <stdexcept>
@@ -9,6 +11,8 @@
 namespace {
     constexpr double kLowFuelThreshold = 20.0;
     constexpr double kSignalDegradedThreshold = 0.5;
+
+    std::atomic<std::uint64_t> gNextSequenceNumber{1}; 
     
     void appendUint32LittleEndian(
         std::vector<std::uint8_t>& bytes,
@@ -21,9 +25,9 @@ namespace {
 
     void appendUint64LittleEndian(
         std::vector<std::uint8_t>& bytes,
-        std::uint32_t value
+        std::uint64_t value
     ) {
-        for (int shift = 0; shift <64; shift += 8) {
+        for (int shift = 0; shift < 64; shift += 8) {
             bytes.push_back(static_cast<std::uint8_t>((value >> shift) & 0xFF));
         }
     }
@@ -57,6 +61,29 @@ std::vector<std::uint8_t> TelemetryPacketBuilder::buildPacket(
     appendUint32LittleEndian(packet, buildStatusFlags(vessel));
 
     return packet;
+}
+
+std::vector<std::uint8_t> TelemetryPacketBuilder::buildPacketWithGeneratedMetadata(
+    const VesselState& vessel
+) {
+    return buildPacket(
+        vessel,
+        nextSequenceNumber(),
+        currentTimestampUnixMs()
+    );
+}
+
+std::uint64_t TelemetryPacketBuilder::nextSequenceNumber() {
+    return gNextSequenceNumber.fetch_add(1);
+}
+
+std::uint64_t TelemetryPacketBuilder::currentTimestampUnixMs() {
+    const auto now = std::chrono::system_clock::now();
+    const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now.time_since_epoch()
+    );
+
+    return static_cast<std::uint64_t>(milliseconds.count());
 }
 
 std::uint32_t TelemetryPacketBuilder::buildStatusFlags(

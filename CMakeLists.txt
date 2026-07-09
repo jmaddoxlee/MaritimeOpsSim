@@ -33,6 +33,7 @@ add_library(MaritimeOpsSimCore
     cpp/src/ScenarioLoader.cpp
     cpp/src/SimulationEngine.cpp
     cpp/src/TelemetryPacketBuilder.cpp
+    cpp/src/UdpTelemetrySender.cpp
     cpp/src/Vessel.cpp
 )
 
@@ -97,6 +98,14 @@ add_executable(MaritimeOpsSimTests
 target_link_libraries(MaritimeOpsSimTests PRIVATE
     MaritimeOpsSimCore
     GTest::gtest_main
+)
+
+add_executable(UdpTelemetrySmokeTest
+    cpp/apps/UdpTelemetrySmokeTestApp.cpp
+)
+
+target_link_libraries(UdpTelemetrySmokeTest PRIVATE
+    MaritimeOpsSimCore
 )
 
 include(GoogleTest)
