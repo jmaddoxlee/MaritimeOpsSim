@@ -108,5 +108,13 @@ target_link_libraries(UdpTelemetrySmokeTest PRIVATE
     MaritimeOpsSimCore
 )
 
+add_executable(FleetTelemetrySimulation
+    cpp/apps/FleetTelemetrySimulationApp.cpp
+)
+
+target_link_libraries(FleetTelemetrySimulation PRIVATE
+    MaritimeOpsSimCore
+)
+
 include(GoogleTest)
 gtest_discover_tests(MaritimeOpsSimTests)
