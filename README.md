@@ -203,6 +203,41 @@ Completed:
 - Added screenshot capture
 - Recorded first visual demo clip
 
+### Week 5 — Fleet Simulation and UDP Telemetry
+
+Completed:
+
+- Added `VesselState` runtime model for live fleet state
+- Added `FleetSimulationEngine` to update multiple vessels per tick
+- Added deterministic position and fuel updates
+- Added sample fleet generation for 100 vessels
+- Added headless fleet simulation mode
+- Added `TelemetryPacketBuilder` for fixed-size binary telemetry packets
+- Added packet sequence number generation
+- Added timestamp generation using `std::chrono`
+- Added status flags for active, low fuel, and degraded signal states
+- Added `UdpTelemetrySender` for UDP packet transmission
+- Added UDP smoke test app that sends one packet to localhost
+- Added fleet telemetry simulation app that sends one packet per vessel per tick
+- Added silent simulation mode using `--silent` or `-s`
+- Added packet builder tests for packet size, vessel ID, status flags, sequence number, and timestamp
+- Added fleet tests for generated fleet size and unique vessel IDs
+- Added fuel model explanation to system design documentation
+
+Telemetry packet layout:
+
+````text
+sequence number       8 bytes
+timestamp             8 bytes
+vessel numeric ID     4 bytes
+x                     8 bytes
+y                     8 bytes
+speed                 8 bytes
+heading               8 bytes
+fuel                  8 bytes
+signal strength       8 bytes
+status flags          4 bytes
+
 ---
 
 ## New Distributed Platform Roadmap
@@ -372,7 +407,7 @@ React + TypeScript dashboard
 TimescaleDB telemetry history
     ↓
 Python chaos and integration tests
-```
+````
 
 ---
 
