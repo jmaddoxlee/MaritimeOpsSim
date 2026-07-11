@@ -381,6 +381,43 @@ Raylib remains the local visual demo.
 
 Headless mode becomes the future source for UDP telemetry emission.
 
+### Deterministic Fleet Update Loop
+
+The fleet simulation should use a deterministic update loop.
+
+Deterministic means the same starting state, same input values, and same time step should always produce the same result.
+
+For example, if `VESSEL-001` starts at position `(50, 50)`, has speed `5`, heading `0`, and updates with `deltaTime = 1.0`, then the next position should always be `(55, 50)`.
+
+### Why Determinism Matters
+
+Fleet update loops should be deterministic because the simulation needs to be testable, repeatable, and debuggable.
+
+In this project, many vessels are updated repeatedly based on:
+
+- Position
+- Speed
+- Heading
+- Fuel
+- Signal strength
+- Active status
+
+If the same simulation produces different results each time it runs, then bugs become harder to reproduce and tests become less reliable.
+
+### Testing Benefits
+
+Deterministic updates make automated tests easier to write.
+
+For example, a test can safely expect:
+
+````text
+start position = (50, 50)
+speed = 5
+heading = 0
+deltaTime = 1.0
+
+expected next position = (55, 50)
+
 ### Planned CLI Modes
 
 The simulator will eventually support simple command-line options for choosing visual or headless execution.
@@ -392,7 +429,7 @@ Planned flags:
 --headless
 --vessels 100
 --duration 60
-```
+````
 
 Initial examples:
 

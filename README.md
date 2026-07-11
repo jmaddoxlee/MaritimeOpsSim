@@ -240,6 +240,60 @@ status flags          4 bytes
 
 ---
 
+### Week 6 — CLI Validation and UDP Simulation Run
+
+Completed:
+
+* Added basic command-line option planning for the fleet telemetry simulation
+* Added `--headless` option for explicit terminal-only simulation mode
+* Added `--vessels <count>` option to configure fleet size from the command line
+* Added fallback defaults for invalid or missing CLI values
+* Verified C++ build with CMake
+* Ran full GoogleTest test suite
+* Ran UDP fleet telemetry simulation for 60 seconds
+* Captured test output and UDP simulation output under `docs/logs/`
+
+Validation commands:
+
+```bash
+ctest --output-on-failure
+./FleetTelemetrySimulation --headless --vessels 100
+```
+
+Expected simulation scale:
+
+```text
+100 vessels
+1 packet per vessel per second
+60 seconds
+6,000 UDP packets total
+432,000 raw telemetry payload bytes
+```
+
+Terminal log artifacts:
+
+```text
+docs/logs/week6_test_output.log
+docs/logs/week6_udp_simulation_output.log
+```
+
+Current Week 6 flow:
+
+```text
+Command-line options
+    ↓
+FleetSimulationEngine
+    ↓
+TelemetryPacketBuilder
+    ↓
+UdpTelemetrySender
+    ↓
+127.0.0.1:5005
+```
+
+---
+
+
 ## New Distributed Platform Roadmap
 
 ### Phase 0 — Rebrand and Architecture Reset

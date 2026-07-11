@@ -1,0 +1,71 @@
+Fleet Telemetry Simulation
+endpoint=127.0.0.1:5005
+mode=headless
+vessels=100
+durationSeconds=60
+deltaTimeSeconds=1
+
+tick=1 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=2 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=3 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=4 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=5 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=6 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=7 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=8 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=9 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=10 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=11 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=12 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=13 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=14 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=15 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=16 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=17 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=18 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=19 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=20 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=21 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=22 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=23 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=24 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=25 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=26 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=27 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=28 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=29 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=30 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=31 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=32 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=33 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=34 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=35 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=36 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=37 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=38 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=39 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=40 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=41 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=42 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=43 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=44 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=45 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=46 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=47 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=48 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=49 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=50 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=51 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=52 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=53 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=54 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=55 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=56 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=57 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=58 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=59 packetsAttempted=100 packetsSent=100 packetsFailed=0
+tick=60 packetsAttempted=100 packetsSent=100 packetsFailed=0
+
+complete=true
+totalPacketsSent=6000
+totalPacketsFailed=0
