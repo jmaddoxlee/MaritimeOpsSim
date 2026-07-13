@@ -48,3 +48,32 @@ The first backend goal is to create a .NET service that can:
 3. Receive a test packet
 4. Decode or log the packet
 5. Avoid crashing on malformed packets
+
+---
+
+## Current Implementation
+
+The first backend skeleton has been created as an ASP.NET Core service.
+
+Current implementation includes:
+
+- ASP.NET Core application startup
+- `UdpTelemetryReceiver` background service
+- UDP bind on port `5005`
+- Raw packet receive loop
+- Packet length logging
+- Sender endpoint logging
+- Basic root endpoint
+- Basic health endpoint
+
+Current UDP test flow:
+
+```text
+C++ FleetTelemetrySimulation
+    ↓ UDP 127.0.0.1:5005
+C# MaritimeOps.Ingestion
+    ↓
+UdpTelemetryReceiver
+    ↓
+Console logs packet length and sender endpoint
+```
