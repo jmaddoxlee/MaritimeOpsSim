@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 
@@ -98,7 +99,7 @@ TEST(TelemetryPacketBuilderTest, PacketIsNotEmpty) {
         true
     };
 
-    const std::vector<uint8_t> packet = TelemetryPacketBuilder::buildPacket(vessel, 1, 1000);
+    const std::vector<std::uint8_t> packet = TelemetryPacketBuilder::buildPacket(vessel, 1, 1000);
 
     EXPECT_FALSE(packet.empty());
     EXPECT_EQ(packet.size(), TelemetryPacketBuilder::kPacketSizeBytes);
@@ -115,7 +116,7 @@ TEST(TelemetryPacketBuilderTest, PacketContainsExpectedVesselId) {
         true
     };
 
-    const std::vector<uint8_t> packet = TelemetryPacketBuilder::buildPacket(vessel, 1, 1000);
+    const std::vector<std::uint8_t> packet = TelemetryPacketBuilder::buildPacket(vessel, 1, 1000);
 
     // Packet layout:
     // sequence number  = bytes 0-7
@@ -162,7 +163,7 @@ TEST(TelemetryPacketBuilderTest, BuildsPacketWithGeneratedMetadata) {
         true
     };
 
-    const std::vector<uint8_t> packet = TelemetryPacketBuilder::buildPacketWithGeneratedMetadata(vessel);
+    const std::vector<std::uint8_t> packet = TelemetryPacketBuilder::buildPacketWithGeneratedMetadata(vessel);
 
     EXPECT_FALSE(packet.empty());
     EXPECT_EQ(packet.size(), TelemetryPacketBuilder::kPacketSizeBytes);
