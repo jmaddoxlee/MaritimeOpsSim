@@ -3,6 +3,12 @@ build/
 cmake-build-*/
 out/
 
+# .NET build output
+bin/
+obj/
+**/bin/
+**/obj/
+
 # C++ compiled files
 *.o
 *.obj
