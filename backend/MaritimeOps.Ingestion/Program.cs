@@ -1,8 +1,32 @@
 using MaritimeOps.Ingestion.Telemetry;
+using System.Threading.Channels;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<TelemetryMetrics>();
+
+builder.Services.AddSingleton(_ => 
+    Channel.CreateBounded<UdpTelemetryPacket>(
+        new BoundedChannelOptions(10_000)
+        {
+            FullMode = BoundedChannelFullMode.Wait,
+            SingleReader = true,
+            SingleWriter = true
+        }
+    )
+);
+
+builder.Services.AddSingleton(serviceProvider =>
+    serviceProvider.GetRequiredService<Channel<UdpTelemetryPacket>>().Reader
+);
+
+builder.Services.AddSingleton(serviceProvider =>
+    serviceProvider.GetRequiredService<Channel<UdpTelemetryPacket>>().Writer
+);
+
 builder.Services.AddHostedService<UdpTelemetryReceiver>();
+builder.Services.AddHostedService<TelemetryDecoderWorker>();
+builder.Services.AddHostedService<TelemetryMetricsReporter>();
 
 WebApplication app = builder.Build();
 
@@ -12,6 +36,16 @@ app.MapGet("/heat", () => Results.Ok(new
 {
     status = "ok",
     service = "MaritimeOps.Ingestion"
+}));
+
+app.MapGet("/metrics", (TelemetryMetrics metrics) => Results.Ok(new
+{
+    receivedPackets = metrics.ReceivedPacket,
+    receivedBytes = metrics.ReceivedBytes,
+    queuedPackets = metrics.QueuedPackets,
+    decodedPackets = metrics.DecodedPackets,
+    badPackets = metrics.BadPackets,
+    droppedPackets = metrics.DroppedPackets
 }));
 
 app.Run();
