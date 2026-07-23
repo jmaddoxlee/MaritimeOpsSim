@@ -53,27 +53,40 @@ The first backend goal is to create a .NET service that can:
 
 ## Current Implementation
 
-The first backend skeleton has been created as an ASP.NET Core service.
+The backend has been upgraded from a basic UDP listener into a structured telemetry ingestion pipeline.
 
 Current implementation includes:
 
 - ASP.NET Core application startup
 - `UdpTelemetryReceiver` background service
 - UDP bind on port `5005`
-- Raw packet receive loop
-- Packet length logging
-- Sender endpoint logging
+- Raw UDP packet receive loop
+- `System.Threading.Channels` producer-consumer pipeline
+- `PacketDecoder` for temporary 72-byte binary packet decoding
+- `VesselTelemetry` structured telemetry model
+- `VesselStateRegistry` for latest vessel state storage
+- `ConcurrentDictionary` for thread-safe vessel state updates
+- `TelemetryMetrics` for packet counters
+- `TelemetryMetricsReporter` for packets-per-second logs
 - Basic root endpoint
 - Basic health endpoint
+- Metrics endpoint
+- Latest vessel state endpoint
 
-Current UDP test flow:
+Current UDP telemetry flow:
 
 ```text
 C++ FleetTelemetrySimulation
     ↓ UDP 127.0.0.1:5005
-C# MaritimeOps.Ingestion
-    ↓
 UdpTelemetryReceiver
-    ↓
-Console logs packet length and sender endpoint
+    ↓ writes UdpTelemetryPacket into channel
+System.Threading.Channels
+    ↓ reads packet
+TelemetryDecoderWorker
+    ↓ decodes binary packet
+PacketDecoder
+    ↓ creates structured telemetry
+VesselTelemetry
+    ↓ stores latest vessel state
+VesselStateRegistry
 ```

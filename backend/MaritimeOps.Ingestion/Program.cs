@@ -4,6 +4,8 @@ using System.Threading.Channels;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<TelemetryMetrics>();
+builder.Services.AddSingleton<PacketDecoder>();
+builder.Services.AddSingleton<VesselStateRegistry>();
 
 builder.Services.AddSingleton(_ => 
     Channel.CreateBounded<UdpTelemetryPacket>(
@@ -32,20 +34,29 @@ WebApplication app = builder.Build();
 
 app.MapGet("/", () => "MaritimeOps.Ingestion is running.");
 
-app.MapGet("/heat", () => Results.Ok(new
+app.MapGet("/health", () => Results.Ok(new
 {
     status = "ok",
     service = "MaritimeOps.Ingestion"
 }));
 
-app.MapGet("/metrics", (TelemetryMetrics metrics) => Results.Ok(new
+app.MapGet("/metrics", (
+    TelemetryMetrics metrics,
+    VesselStateRegistry vesselStateRegistry
+) => Results.Ok(new
 {
-    receivedPackets = metrics.ReceivedPacket,
+    receivedPackets = metrics.ReceivedPackets,
     receivedBytes = metrics.ReceivedBytes,
     queuedPackets = metrics.QueuedPackets,
     decodedPackets = metrics.DecodedPackets,
     badPackets = metrics.BadPackets,
-    droppedPackets = metrics.DroppedPackets
+    droppedPackets = metrics.DroppedPackets,
+    activeVesselCount = vesselStateRegistry.ActiveVesselCount,
+    stateUpdateCount = vesselStateRegistry.StateUpdateCount
 }));
+
+app.MapGet("/vessels", (
+    VesselStateRegistry vesselStateRegistry
+) => Results.Ok(vesselStateRegistry.GetSnapshot()));
 
 app.Run();

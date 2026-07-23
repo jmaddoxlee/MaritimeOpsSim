@@ -3,21 +3,24 @@ namespace MaritimeOps.Ingestion.Telemetry;
 public sealed class TelemetryMetricsReporter : BackgroundService
 {
     private readonly TelemetryMetrics _metrics;
+    private readonly VesselStateRegistry _vesselStateRegistry;
     private readonly ILogger<TelemetryMetricsReporter> _logger;
 
     public TelemetryMetricsReporter(
         TelemetryMetrics metrics,
+        VesselStateRegistry vesselStateRegistry,
         ILogger<TelemetryMetricsReporter> logger
     )
     {
         _metrics = metrics;
+        _vesselStateRegistry = vesselStateRegistry;
         _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        long lastReceivedPacket = 0;
-        long lastDecodedPacket = 0;
+        long lastReceivedPackets = 0;
+        long lastDecodedPackets = 0;
 
         try
         {
@@ -25,24 +28,27 @@ public sealed class TelemetryMetricsReporter : BackgroundService
             {
                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
 
-                long currentReceivedPacket = _metrics.ReceivedPacket;
-                long currentDecodedPacket = _metrics.DecodedPackets;
+                long currentReceivedPackets = _metrics.ReceivedPackets;
+                long currentDecodedPackets = _metrics.DecodedPackets;
 
-                long receivedPacketsPerSecond = currentReceivedPacket - lastReceivedPacket;
+                long receivedPacketsPerSecond =
+                    currentReceivedPackets - lastReceivedPackets;
 
-                long decodedPacketsPerSecond = currentDecodedPacket - lastDecodedPacket;
+                long decodedPacketsPerSecond =
+                    currentDecodedPackets - lastDecodedPackets;
 
-                lastReceivedPacket = currentReceivedPacket;
-                lastDecodedPacket = currentDecodedPacket;
+                lastReceivedPackets = currentReceivedPackets;
+                lastDecodedPackets = currentDecodedPackets;
 
                 _logger.LogInformation(
-                    "Telemetry metrics: receivedPerSecond={ReceivedPerSecond}, decodedPerSecond={DecodedPerSecond}, totalReceived={TotalReceived}, totalDecoded={TotalDecoded}, badPackets={BadPackets}, droppedPackets={DroppedPackets}",
+                    "Telemetry metrics: packetsPerSecond={PacketsPerSecond}, decodedPerSecond={DecodedPerSecond}, packetCount={PacketCount}, decodedPacketCount={DecodedPacketCount}, badPacketCount={BadPacketCount}, droppedPacketCount={DroppedPacketCount}, activeVesselCount={ActiveVesselCount}",
                     receivedPacketsPerSecond,
                     decodedPacketsPerSecond,
-                    _metrics.ReceivedPacket,
+                    _metrics.ReceivedPackets,
                     _metrics.DecodedPackets,
                     _metrics.BadPackets,
-                    _metrics.DroppedPackets
+                    _metrics.DroppedPackets,
+                    _vesselStateRegistry.ActiveVesselCount
                 );
             }
         } catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
