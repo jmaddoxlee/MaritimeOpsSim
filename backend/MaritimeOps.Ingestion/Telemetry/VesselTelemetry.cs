@@ -3,7 +3,7 @@ namespace MaritimeOps.Ingestion.Telemetry;
 public sealed record VesselTelemetry(
     ulong SequenceNumber,
     DateTimeOffset TimestampUtc,
-    uint VesselId,
+    string VesselId,
     double X,
     double Y,
     double Speed,
@@ -14,5 +14,5 @@ public sealed record VesselTelemetry(
     DateTimeOffset ReceivedAtUtc
 )
 {
-    public string VesselDisplayId => $"VESSEL-{VesselId:000}";
+    public string VesselDisplayId => VesselId;
 }

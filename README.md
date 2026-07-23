@@ -96,12 +96,12 @@ Docker / Linux Runtime
 | Network Transport      | UDP                       | C++ simulation to backend telemetry stream          |
 | Ingestion Backend      | C# / .NET                 | High-performance telemetry receiver and router      |
 | Concurrency            | System.Threading.Channels | Producer-consumer ingestion pipeline                |
-| Backend state registry | ConcurrentDictionary      | Latest vessel state registry.                       |
+| Backend State Registry | ConcurrentDictionary      | Latest vessel state registry                        |
 | Live Stream            | WebSockets                | Backend to browser real-time updates                |
 | Frontend               | React + TypeScript        | Mission-control dashboard                           |
 | Map Rendering          | MapLibre GL JS or Canvas  | Live vessel visualization                           |
 | Persistence            | TimescaleDB               | Time-series telemetry storage                       |
-| Message broker         | Kafka.                    | Optional future event streaming layer               |
+| Message Broker         | Kafka                     | Optional future event streaming layer               |
 | Test Automation        | Python + Pytest           | Chaos, integration, and control tests               |
 | Runtime                | Linux + Docker Compose    | Reproducible multi-service environment              |
 | CI/CD                  | GitHub Actions            | Build, test, and verification pipeline              |
@@ -148,6 +148,8 @@ Completed:
 - Added safe-scope disclaimer
 - Created initial architecture direction
 
+---
+
 ### Week 2 — Core C++ Simulation Engine
 
 Completed:
@@ -163,6 +165,8 @@ Completed:
 - Added console telemetry output
 - Added GoogleTest setup
 - Wrote first vessel movement test
+
+---
 
 ### Week 3 — Scenario Loader and Map System
 
@@ -185,6 +189,8 @@ Completed:
 - Added basic `MapGrid` model
 - Added bounds, obstacle, and restricted-zone checks
 
+---
+
 ### Week 4 — Basic Raylib Visual Demo
 
 Completed:
@@ -202,6 +208,8 @@ Completed:
 - Added basic status text
 - Added screenshot capture
 - Recorded first visual demo clip
+
+---
 
 ### Week 5 — Fleet Simulation and UDP Telemetry
 
@@ -224,9 +232,9 @@ Completed:
 - Added fleet tests for generated fleet size and unique vessel IDs
 - Added fuel model explanation to system design documentation
 
-Telemetry packet layout:
+Temporary binary telemetry packet layout:
 
-````text
+```text
 sequence number       8 bytes
 timestamp             8 bytes
 vessel numeric ID     4 bytes
@@ -237,6 +245,21 @@ heading               8 bytes
 fuel                  8 bytes
 signal strength       8 bytes
 status flags          4 bytes
+```
+
+Current Week 5 telemetry flow:
+
+```text
+FleetSimulationEngine
+    ↓
+VesselState
+    ↓
+TelemetryPacketBuilder
+    ↓
+UdpTelemetrySender
+    ↓
+127.0.0.1:5005
+```
 
 ---
 
@@ -244,14 +267,14 @@ status flags          4 bytes
 
 Completed:
 
-* Added basic command-line option planning for the fleet telemetry simulation
-* Added `--headless` option for explicit terminal-only simulation mode
-* Added `--vessels <count>` option to configure fleet size from the command line
-* Added fallback defaults for invalid or missing CLI values
-* Verified C++ build with CMake
-* Ran full GoogleTest test suite
-* Ran UDP fleet telemetry simulation for 60 seconds
-* Captured test output and UDP simulation output under `docs/logs/`
+- Added basic command-line option planning for the fleet telemetry simulation
+- Added `--headless` option for explicit terminal-only simulation mode
+- Added `--vessels <count>` option to configure fleet size from the command line
+- Added fallback defaults for invalid or missing CLI values
+- Verified C++ build with CMake
+- Ran full GoogleTest test suite
+- Ran UDP fleet telemetry simulation for 60 seconds
+- Captured test output and UDP simulation output under `docs/logs/`
 
 Validation commands:
 
@@ -293,6 +316,138 @@ UdpTelemetrySender
 
 ---
 
+### Week 7 — C# UDP Ingestion Pipeline
+
+Completed:
+
+- Created `MaritimeOps.Ingestion` C#/.NET backend service
+- Added ASP.NET Core application startup
+- Added `UdpTelemetryReceiver` background service
+- Bound backend UDP receiver to port `5005`
+- Added `UdpTelemetryPacket` model for raw UDP payloads
+- Added `System.Threading.Channels` producer-consumer pipeline
+- Added `TelemetryDecoderWorker` background worker
+- Added `TelemetryMetrics` packet counters
+- Added `TelemetryMetricsReporter` packets-per-second logs
+- Added clean shutdown using `CancellationToken`
+- Added basic `/health` endpoint
+- Added `/metrics` endpoint
+- Confirmed C++ UDP simulation can send packets to the C# backend
+- Confirmed backend receives UDP packets from the C++ sender
+- Confirmed received packet size is 72 bytes for the temporary binary format
+
+Current Week 7 flow:
+
+```text
+C++ FleetTelemetrySimulation
+    ↓ UDP 127.0.0.1:5005
+C# UdpTelemetryReceiver
+    ↓
+System.Threading.Channels
+    ↓
+TelemetryDecoderWorker
+    ↓
+TelemetryMetricsReporter
+```
+
+Expected backend metric log:
+
+```text
+Telemetry metrics: receivedPerSecond=100, decodedPerSecond=100, totalReceived=100, totalDecoded=100, badPackets=0, droppedPackets=0
+```
+
+---
+
+### Week 8 — Protobuf Telemetry Contract and Cross-Language Decoding
+
+Completed:
+
+- Finalized `proto/vessel_telemetry.proto`
+- Added Protobuf telemetry contract with:
+  - `vessel_id`
+  - `timestamp_unix_ms`
+  - `x`
+  - `y`
+  - `speed`
+  - `heading`
+  - `fuel`
+  - `signal_strength`
+  - `status_flags`
+  - `sequence_number`
+
+- Added C# Protobuf code generation through `Google.Protobuf` and `Grpc.Tools`
+- Added C++ Protobuf code generation through CMake and `protobuf_generate_cpp`
+- Added generated C++ Protobuf source to `MaritimeOpsSimCore`
+- Linked C++ project against `protobuf::libprotobuf`
+- Added `ProtobufTelemetryPacketBuilder` in C++
+- Added `FleetProtobufTelemetrySimulation` executable
+- Serialized one `VesselTelemetry` Protobuf packet in C++
+- Printed serialized Protobuf payload size
+- Sent Protobuf UDP payloads from C++ to C#
+- Added `ProtobufPacketDecoder` in C#
+- Added structured C# `VesselTelemetry` model
+- Added `VesselStateRegistry`
+- Used `ConcurrentDictionary` to store latest state per vessel
+- Added `TelemetryPacketProcessor`
+- Added structured Protobuf logs:
+  - vessel ID
+  - sequence number
+  - x
+  - y
+  - speed
+  - fuel
+
+- Added bad packet handling
+- Added `badPacketCount`
+- Added try/catch around decoder path
+- Confirmed invalid bytes do not crash the backend
+- Added C# tests for:
+  - valid Protobuf packet decode
+  - invalid packet increments bad count
+  - registry updates on valid packet
+
+- Updated `docs/telemetry_contract.md`
+- Ran end-to-end C++ Protobuf UDP sender to C# receiver demo
+
+Current Week 8 flow:
+
+```text
+FleetSimulationEngine
+    ↓
+VesselState
+    ↓
+ProtobufTelemetryPacketBuilder
+    ↓
+serialized Protobuf VesselTelemetry bytes
+    ↓ UDP 127.0.0.1:5005
+UdpTelemetryReceiver
+    ↓
+System.Threading.Channels
+    ↓
+TelemetryDecoderWorker
+    ↓
+TelemetryPacketProcessor
+    ↓
+ProtobufPacketDecoder
+    ↓
+VesselTelemetry model
+    ↓
+VesselStateRegistry
+```
+
+Expected structured backend log:
+
+```text
+Decoded Protobuf vessel telemetry: vesselId=VESSEL-001, sequenceNumber=1, x=55.00, y=50.00, speed=5.00, fuel=99.75
+```
+
+Expected metric log:
+
+```text
+Telemetry metrics: packetsPerSecond=100, decodedPerSecond=100, packetCount=6000, decodedPacketCount=6000, badPacketCount=0, droppedPacketCount=0, activeVesselCount=100
+```
+
+---
 
 ## New Distributed Platform Roadmap
 
@@ -316,6 +471,14 @@ Deliverables:
 - `python/control/`
 - `docker-compose.yml`
 
+Status:
+
+```text
+Mostly complete
+```
+
+---
+
 ### Phase 1 — C++ Fleet Simulation and UDP Telemetry
 
 Goal:
@@ -333,8 +496,16 @@ Build:
 - Signal strength state
 - Headless simulation mode
 - UDP telemetry sender
-- Simple binary payload first
-- Protobuf payload later
+- Temporary binary payload
+- Protobuf payload
+
+Status:
+
+```text
+Complete
+```
+
+---
 
 ### Phase 2 — C#/.NET Ingestion Engine
 
@@ -346,14 +517,41 @@ Build:
 
 - `UdpTelemetryReceiver`
 - `PacketDecoder`
+- `ProtobufPacketDecoder`
 - `VesselStateRegistry`
-- `Channel<byte[]>` ingestion pipeline
+- `Channel<UdpTelemetryPacket>` ingestion pipeline
 - Background worker services
 - Structured console logs
 - Packet counters
 - Dropped packet counters
-- Bad packet quarantine
+- Bad packet handling
 - WebSocket broadcaster
+
+Status:
+
+```text
+In progress
+```
+
+Completed so far:
+
+- UDP receiver
+- Channel pipeline
+- Decoder worker
+- Metrics reporter
+- Protobuf decoder
+- Vessel state registry
+- Bad packet handling
+- HTTP health and metrics endpoints
+
+Remaining:
+
+- WebSocket broadcaster
+- Dashboard-facing DTOs
+- Stale vessel detection
+- Integration test automation
+
+---
 
 ### Phase 3 — Protobuf Telemetry Contract
 
@@ -370,6 +568,14 @@ Build:
 - C# decoder
 - Valid packet tests
 - Invalid packet tests
+
+Status:
+
+```text
+Complete
+```
+
+---
 
 ### Phase 4 — React Mission Dashboard
 
@@ -389,6 +595,14 @@ Build:
 - `useRef`-based fast telemetry store
 - `requestAnimationFrame` render loop
 
+Status:
+
+```text
+Not started
+```
+
+---
+
 ### Phase 5 — TimescaleDB Telemetry Persistence
 
 Goal:
@@ -406,6 +620,14 @@ Build:
 - Fuel trend query
 - Database integration tests
 
+Status:
+
+```text
+Not started
+```
+
+---
+
 ### Phase 6 — Python Test and Control Layer
 
 Goal:
@@ -422,6 +644,14 @@ Build:
 - `performance_monitor.py`
 - `socket_flood_test.py`
 - `stale_vessel_test.py`
+
+Status:
+
+```text
+Not started
+```
+
+---
 
 ### Phase 7 — Docker, Linux, CI, and Portfolio Polish
 
@@ -445,6 +675,12 @@ Build:
 - Resume bullets
 - Interview script
 
+Status:
+
+```text
+Not started
+```
+
 ---
 
 ## Target End-to-End Demo
@@ -461,7 +697,7 @@ React + TypeScript dashboard
 TimescaleDB telemetry history
     ↓
 Python chaos and integration tests
-````
+```
 
 ---
 
@@ -473,12 +709,15 @@ MaritimeOpsSim/
 ├── cpp/
 │   ├── src/
 │   ├── include/
+│   ├── apps/
 │   └── tests/
 │
 ├── proto/
+│   └── vessel_telemetry.proto
 │
 ├── backend/
-│   └── MaritimeOps.Ingestion/
+│   ├── MaritimeOps.Ingestion/
+│   └── MaritimeOps.Ingestion.Tests/
 │
 ├── frontend/
 │   └── maritime-dashboard/
@@ -498,14 +737,16 @@ MaritimeOpsSim/
 │   └── demo/
 │
 ├── docs/
+│   ├── telemetry_contract.md
+│   └── logs/
 │
 ├── scripts/
 │
 ├── .github/
 │   └── workflows/
 │
-├── docker-compose.yml
 ├── CMakeLists.txt
+├── MaritimeOps.slnx
 ├── README.md
 └── LICENSE
 ```
@@ -519,6 +760,16 @@ mkdir -p build
 cd build
 cmake ..
 cmake --build .
+```
+
+---
+
+## How to Build Current C# Backend
+
+From the repository root:
+
+```bash
+dotnet build MaritimeOps.slnx
 ```
 
 ---
@@ -541,11 +792,219 @@ cd build
 
 ---
 
-## How to Run Current Tests
+## How to Run Temporary Binary UDP Simulation
+
+This runs the older temporary binary packet sender.
+
+```bash
+cd build
+./FleetTelemetrySimulation --headless --vessels 100
+```
+
+---
+
+## How to Run Protobuf UDP Simulation
+
+This runs the current Protobuf packet sender.
+
+```bash
+cd build
+./FleetProtobufTelemetrySimulation --vessels 5
+```
+
+For a full 100-vessel run:
+
+```bash
+cd build
+./FleetProtobufTelemetrySimulation --vessels 100
+```
+
+Expected C++ output:
+
+```text
+Fleet Protobuf Telemetry Simulation
+endpoint=127.0.0.1:5005
+vessels=5
+durationSeconds=60
+deltaTimeSeconds=1
+
+protobufSerializedBytes=...
+tick=1 packetsSent=5 packetsFailed=0
+```
+
+---
+
+## How to Run C# Backend
+
+From the repository root:
+
+```bash
+dotnet run --project backend/MaritimeOps.Ingestion
+```
+
+Expected backend startup:
+
+```text
+UDP telemetry receiver listening on port 5005
+Telemetry decoder worker started.
+Application started. Press Ctrl+C to shut down.
+```
+
+Use the ASP.NET Core port printed in the backend terminal.
+
+Example:
+
+```text
+Now listening on: http://localhost:5048
+```
+
+---
+
+## How to Run Current End-to-End Protobuf Demo
+
+Terminal 1 — start the C# backend:
+
+```bash
+cd /Users/jasonlee/MaritimeOpsSim
+dotnet run --project backend/MaritimeOps.Ingestion
+```
+
+Terminal 2 — start the C++ Protobuf sender:
+
+```bash
+cd /Users/jasonlee/MaritimeOpsSim/build
+./FleetProtobufTelemetrySimulation --vessels 5
+```
+
+Expected backend structured log:
+
+```text
+Decoded Protobuf vessel telemetry: vesselId=VESSEL-001, sequenceNumber=1, x=55.00, y=50.00, speed=5.00, fuel=99.75
+```
+
+Expected backend metrics log:
+
+```text
+Telemetry metrics: packetsPerSecond=5, decodedPerSecond=5, packetCount=5, decodedPacketCount=5, badPacketCount=0, droppedPacketCount=0, activeVesselCount=5
+```
+
+For a full run:
+
+```bash
+cd /Users/jasonlee/MaritimeOpsSim/build
+./FleetProtobufTelemetrySimulation --vessels 100
+```
+
+Expected full-run totals after 60 seconds:
+
+```text
+packetCount ≈ 6000
+decodedPacketCount ≈ 6000
+badPacketCount = 0
+activeVesselCount = 100
+```
+
+---
+
+## Backend HTTP Endpoints
+
+Use the actual ASP.NET Core port printed in the backend terminal.
+
+Health check:
+
+```bash
+curl http://localhost:5048/health
+```
+
+Metrics:
+
+```bash
+curl http://localhost:5048/metrics
+```
+
+Latest vessel states:
+
+```bash
+curl http://localhost:5048/vessels
+```
+
+Expected metrics response example:
+
+```json
+{
+  "receivedPackets": 6000,
+  "receivedBytes": 432000,
+  "queuedPackets": 6000,
+  "decodedPackets": 6000,
+  "badPackets": 0,
+  "droppedPackets": 0,
+  "activeVesselCount": 100,
+  "stateUpdateCount": 6000
+}
+```
+
+---
+
+## How to Run C++ Tests
 
 ```bash
 cd build
 ctest --output-on-failure
+```
+
+---
+
+## How to Run C# Tests
+
+From the repository root:
+
+```bash
+dotnet test MaritimeOps.slnx
+```
+
+Current backend tests cover:
+
+- Valid Protobuf packet decodes
+- Invalid Protobuf packet increments bad packet count
+- Registry updates on valid packet
+
+---
+
+## Telemetry Contract
+
+The current cross-language telemetry contract is defined in:
+
+```text
+proto/vessel_telemetry.proto
+```
+
+Current Protobuf schema:
+
+```proto
+syntax = "proto3";
+
+package maritimeops.telemetry;
+
+option csharp_namespace = "MaritimeOps.Contracts.Telemetry";
+
+message VesselTelemetry {
+  string vessel_id = 1;
+  uint64 timestamp_unix_ms = 2;
+  double x = 3;
+  double y = 4;
+  double speed = 5;
+  double heading = 6;
+  double fuel = 7;
+  double signal_strength = 8;
+  uint32 status_flags = 9;
+  uint64 sequence_number = 10;
+}
+```
+
+Detailed telemetry contract documentation is available in:
+
+```text
+docs/telemetry_contract.md
 ```
 
 ---
@@ -562,31 +1021,33 @@ MaritimeOpsSim currently has:
 - Basic telemetry panel
 - Mission timer
 - Status text
+- Fleet simulation with multiple vessels
+- Headless fleet simulation mode
+- UDP telemetry sender
+- Temporary binary packet builder
+- Temporary binary packet tests
+- C#/.NET ingestion backend
+- UDP receiver on port `5005`
+- `System.Threading.Channels` ingestion pipeline
+- Packet metrics and packets-per-second logs
+- Protobuf telemetry contract
+- C++ Protobuf serialization
+- C# Protobuf decoding
+- Thread-safe latest vessel state registry
+- Bad packet handling
+- Backend HTTP health, metrics, and vessel-state endpoints
+- C# xUnit tests for the Protobuf ingestion pipeline
 
 Next milestone:
 
 ```text
-Phase 1 — C++ Fleet Simulation and UDP Telemetry
+Phase 4 — React Mission Dashboard
+```
+
+Recommended next backend/frontend step:
+
+```text
+Add WebSocket broadcaster from C# backend to React dashboard
 ```
 
 ---
-
-## Resume Direction
-
-### Short Version
-
-Built MaritimeOpsSim, a distributed maritime command-and-telemetry platform that simulates safe search-and-rescue vessel operations, streams live telemetry, visualizes mission state, and validates system resilience through automated testing.
-
-### Strong Version
-
-Developed MaritimeOpsSim, a distributed maritime telemetry platform with a C++20 fleet simulation engine, UDP telemetry streaming, C#/.NET ingestion pipeline, React/TypeScript mission dashboard, TimescaleDB persistence, Python chaos tests, Docker Compose orchestration, and CI automation.
-
----
-
-## Interview Pitch
-
-I built MaritimeOpsSim, a safe distributed maritime command-and-telemetry platform. It started as a C++20 unmanned surface vessel simulator with Raylib visualization and JSON scenario loading. I expanded it into a distributed telemetry system where the C++ simulation layer produces live vessel state, streams telemetry over UDP, and a C#/.NET backend ingests, decodes, and routes that data through asynchronous producer-consumer pipelines.
-
-The backend maintains latest vessel state, broadcasts updates to a React/TypeScript dashboard over WebSockets, and persists telemetry history into TimescaleDB. I also added Python-based chaos tests that inject corrupted packets, simulate disconnects, and verify that the backend isolates faults instead of crashing.
-
-The project is intentionally safe-scoped around search-and-rescue, maritime domain awareness, telemetry processing, and system reliability. It does not include targeting, fire control, strike planning, or real-world tactical recommendations.

@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.20)
 
 project(MaritimeOpsSim VERSION 0.1.0 LANGUAGES CXX)
 
+find_package(Protobuf REQUIRED)
+find_package(absl REQUIRED)
+
+set(PROTO_FILES
+    proto/vessel_telemetry.proto
+)
+
+protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -26,6 +35,7 @@ set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(raylib)
 
 add_library(MaritimeOpsSimCore
+    ${PROTO_SRCS}
     cpp/src/FleetGeneration.cpp
     cpp/src/FleetSimulationEngine.cpp
     cpp/src/MapGrid.cpp
@@ -35,14 +45,22 @@ add_library(MaritimeOpsSimCore
     cpp/src/TelemetryPacketBuilder.cpp
     cpp/src/UdpTelemetrySender.cpp
     cpp/src/Vessel.cpp
+    cpp/src/ProtobufTelemetryPacketBuilder.cpp
 )
 
 target_include_directories(MaritimeOpsSimCore PUBLIC
     cpp/include
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-target_link_libraries(MaritimeOpsSimCore PUBLIC
-    nlohmann_json::nlohmann_json
+target_link_libraries(MaritimeOpsSimCore
+    PUBLIC
+        nlohmann_json::nlohmann_json
+        protobuf::libprotobuf
+        absl::log
+        absl::check
+        absl::strings
+        absl::base
 )
 
 if (MSVC)
@@ -113,6 +131,14 @@ add_executable(FleetTelemetrySimulation
 )
 
 target_link_libraries(FleetTelemetrySimulation PRIVATE
+    MaritimeOpsSimCore
+)
+
+add_executable(FleetProtobufTelemetrySimulation
+    cpp/apps/FleetProtobufTelemetrySimulationApp.cpp
+)
+
+target_link_libraries(FleetProtobufTelemetrySimulation PRIVATE
     MaritimeOpsSimCore
 )
 

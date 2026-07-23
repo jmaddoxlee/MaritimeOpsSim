@@ -4,8 +4,9 @@ using System.Threading.Channels;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<TelemetryMetrics>();
-builder.Services.AddSingleton<PacketDecoder>();
+builder.Services.AddSingleton<ProtobufPacketDecoder>();
 builder.Services.AddSingleton<VesselStateRegistry>();
+builder.Services.AddSingleton<TelemetryPacketProcessor>();
 
 builder.Services.AddSingleton(_ => 
     Channel.CreateBounded<UdpTelemetryPacket>(

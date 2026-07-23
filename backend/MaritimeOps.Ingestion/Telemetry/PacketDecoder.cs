@@ -53,7 +53,7 @@ public sealed class PacketDecoder
             telemetry = new VesselTelemetry(
                 sequenceNumber,
                 timestampUtc,
-                vesselId,
+                $"VESSEL-{vesselId:000}",
                 x,
                 y,
                 speed,

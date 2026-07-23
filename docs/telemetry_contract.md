@@ -2,13 +2,35 @@
 
 ## Purpose
 
-This document defines the telemetry data that the C++ simulation will eventually send to the C#/.NET ingestion backend.
+The telemetry contract defines the wire format used between the C++ simulation layer and the C# ingestion backend.
 
-The first implementation will use a simple temporary text packet format so packets are easy to print, inspect, debug, and test.
-
-Later, this contract will be replaced or formalized using Protocol Buffers.
+Week 8 moves the project from a temporary fixed-size binary packet to a Protocol Buffers message.
 
 ---
+
+## Current Wire Format
+
+The current UDP payload is a serialized Protobuf message:
+
+````proto
+syntax = "proto3";
+
+package maritimeops.telemetry;
+
+option csharp_namespace = "MaritimeOps.Contracts.Telemetry";
+
+message VesselTelemetry {
+  string vessel_id = 1;
+  uint64 timestamp_unix_ms = 2;
+  double x = 3;
+  double y = 4;
+  double speed = 5;
+  double heading = 6;
+  double fuel = 7;
+  double signal_strength = 8;
+  uint32 status_flags = 9;
+  uint64 sequence_number = 10;
+}
 
 ## Telemetry Scope
 
@@ -18,7 +40,7 @@ A packet answers:
 
 ```text
 What is the current state of this vessel right now?
-```
+````
 
 The telemetry contract is focused on safe simulation state only:
 

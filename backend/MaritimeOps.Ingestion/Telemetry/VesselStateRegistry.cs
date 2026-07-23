@@ -4,7 +4,7 @@ namespace MaritimeOps.Ingestion.Telemetry;
 
 public sealed class VesselStateRegistry
 {
-    private readonly ConcurrentDictionary<uint, VesselTelemetry> _latestStates = new();
+    private readonly ConcurrentDictionary<string, VesselTelemetry> _latestStates = new();
 
     private long _stateUpdateCount;
 

@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/backend/">
+    <Project Path="backend/MaritimeOps.Ingestion.Tests/MaritimeOps.Ingestion.Tests.csproj" />
     <Project Path="backend/MaritimeOps.Ingestion/MaritimeOps.Ingestion.csproj" />
   </Folder>
 </Solution>
