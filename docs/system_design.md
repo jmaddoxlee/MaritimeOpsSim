@@ -54,3 +54,33 @@ Inactive vessels do not move and do not burn fuel.
 This fuel model is intentionally simple for the current milestone. Its purpose is to create predictable telemetry values that can be tested, displayed, and transmitted through the future UDP telemetry pipeline.
 
 Later versions may replace this with a more realistic model that considers vessel type, acceleration, load, sea conditions, or mission behavior.
+
+# System Design
+
+## Backend Architecture
+
+The backend is designed as an asynchronous telemetry ingestion and broadcast service.
+
+Current backend flow:
+
+```text
+C++ Protobuf UDP Sender
+    ↓ UDP 127.0.0.1:5005
+UdpTelemetryReceiver
+    ↓ writes UdpTelemetryPacket
+System.Threading.Channels
+    ↓ reads packet
+TelemetryDecoderWorker
+    ↓
+TelemetryPacketProcessor
+    ↓
+ProtobufPacketDecoder
+    ↓
+VesselTelemetry
+    ↓
+VesselStateRegistry
+    ↓
+WebSocketTelemetryBroadcaster
+    ↓
+Browser / dashboard clients
+```
