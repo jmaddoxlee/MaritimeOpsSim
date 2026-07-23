@@ -9,7 +9,7 @@ public sealed class TelemetryMetrics
     private long _badPackets;
     private long _droppedPackets;
 
-    public long ReceivedPacket => Interlocked.Read(ref _receivedPackets);
+    public long ReceivedPackets => Interlocked.Read(ref _receivedPackets);
     public long ReceivedBytes => Interlocked.Read(ref _receivedBytes);
     public long QueuedPackets => Interlocked.Read(ref _queuedPackets);
     public long DecodedPackets => Interlocked.Read(ref _decodedPackets);
