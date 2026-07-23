@@ -449,6 +449,23 @@ Telemetry metrics: packetsPerSecond=100, decodedPerSecond=100, packetCount=6000,
 
 ---
 
+## Week 9 — WebSocket Broadcast Layer
+
+Week 9 adds the first live backend-to-client streaming layer.
+
+Current backend architecture:
+
+````text
+UDP receiver
+    ↓
+Channel
+    ↓
+Decoder
+    ↓
+Registry
+    ↓
+WebSocket broadcaster
+
 ## New Distributed Platform Roadmap
 
 ### Phase 0 — Rebrand and Architecture Reset
@@ -475,7 +492,7 @@ Status:
 
 ```text
 Mostly complete
-```
+````
 
 ---
 
@@ -1051,3 +1068,15 @@ Add WebSocket broadcaster from C# backend to React dashboard
 ```
 
 ---
+
+---
+
+## How to Run React Dashboard
+
+From the repository root:
+
+```bash
+cd frontend/maritime-dashboard
+npm install
+npm run dev
+```
