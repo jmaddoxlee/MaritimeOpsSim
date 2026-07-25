@@ -23,11 +23,15 @@ export function useTelemetrySocket() {
     activeVesselCount: 0,
     staleVesselCount: 0,
     connectedClientCount: 0,
+    totalMessagesReceived: 0,
+    messagesPerSecond: 0,
   });
 
   const socketRef = useRef<WebSocket | null>(null);
   const reconnectTimerRef = useRef<number | null>(null);
   const shouldReconnectRef = useRef(true);
+
+  const messagesThisSecondRef = useRef(0);
 
   const [connectionStatus, setConnectionStatus] =
     useState<ConnectionStatus>("connecting");
@@ -49,6 +53,9 @@ export function useTelemetrySocket() {
 
       socket.onmessage = (event) => {
         try {
+          liveStoreRef.current.totalMessagesReceived += 1;
+          messagesThisSecondRef.current += 1;
+
           const message = JSON.parse(event.data) as TelemetryMessage;
 
           if (isSnapshot(message)) {
@@ -94,9 +101,15 @@ export function useTelemetrySocket() {
 
     connect();
 
+    const messageRateTimer = window.setInterval(() => {
+      liveStoreRef.current.messagesPerSecond = messagesThisSecondRef.current;
+
+      messagesThisSecondRef.current = 0;
+    }, 1000);
+
     const uiRefreshTimer = window.setInterval(() => {
-      // This is intentionally low-frequency React state.
-      // Live telemetry remains in liveStoreRef so every packet does not cause a React render.
+      // Keep this intentionally low-frequency.
+      // Live telemetry stays in useRef and does not cause a React render per message.
       setRenderCount((current) => current + 1);
     }, 250);
 
@@ -107,6 +120,7 @@ export function useTelemetrySocket() {
         window.clearTimeout(reconnectTimerRef.current);
       }
 
+      window.clearInterval(messageRateTimer);
       window.clearInterval(uiRefreshTimer);
 
       socketRef.current?.close();

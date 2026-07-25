@@ -1,4 +1,5 @@
 import type { VesselState } from "../types/telemetry";
+import { getVesselStatusLabel } from "../utils/telemetryStatus";
 
 interface SelectedVesselPanelProps {
   vessel: VesselState | null;
@@ -16,12 +17,16 @@ export function SelectedVesselPanel({ vessel }: SelectedVesselPanelProps) {
     );
   }
 
+  const statusLabel = getVesselStatusLabel(vessel);
+
   return (
     <div className="panel">
       <div className="panel-header">
         <h2>Selected Vessel</h2>
-        <span className={vessel.isStale ? "status-stale" : "status-active"}>
-          {vessel.isStale ? "stale" : "active"}
+        <span
+          className={`vessel-status vessel-status--${statusLabel.replace(" ", "-")}`}
+        >
+          {statusLabel}
         </span>
       </div>
 
@@ -48,6 +53,9 @@ export function SelectedVesselPanel({ vessel }: SelectedVesselPanelProps) {
 
         <span>Sequence</span>
         <strong>{vessel.sequenceNumber}</strong>
+
+        <span>Received</span>
+        <strong>{new Date(vessel.receivedAtUtc).toLocaleTimeString()}</strong>
       </div>
     </div>
   );

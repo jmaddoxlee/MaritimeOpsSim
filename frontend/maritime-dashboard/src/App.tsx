@@ -55,6 +55,16 @@ function App() {
         </div>
 
         <div className="metric-card">
+          <span>WS Msg/Sec</span>
+          <strong>{liveStoreRef.current.messagesPerSecond}</strong>
+        </div>
+
+        <div className="metric-card">
+          <span>Total WS Msg</span>
+          <strong>{liveStoreRef.current.totalMessagesReceived}</strong>
+        </div>
+
+        <div className="metric-card">
           <span>Render Count</span>
           <strong>{renderCount}</strong>
         </div>

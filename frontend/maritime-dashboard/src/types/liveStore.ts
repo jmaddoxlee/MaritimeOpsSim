@@ -6,4 +6,7 @@ export interface LiveVesselStore {
   activeVesselCount: number;
   staleVesselCount: number;
   connectedClientCount: number;
+
+  totalMessagesReceived: number;
+  messagesPerSecond: number;
 }

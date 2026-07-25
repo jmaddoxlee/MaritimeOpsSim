@@ -1,9 +1,16 @@
 import { useEffect, useRef } from "react";
+import type { RefObject } from "react";
 import type { LiveVesselStore } from "../types/liveStore";
 import type { VesselState } from "../types/telemetry";
+import {
+  getVesselStatusLabel,
+  hasRestrictedZoneWarning,
+  isLowFuel,
+  isSignalDegraded,
+} from "../utils/telemetryStatus";
 
 interface CanvasMapProps {
-  liveStoreRef: React.RefObject<LiveVesselStore>;
+  liveStoreRef: RefObject<LiveVesselStore>;
   selectedVesselId: string | null;
   onSelectVessel: (vesselId: string) => void;
 }
@@ -13,8 +20,31 @@ interface ProjectedPoint {
   y: number;
 }
 
+interface Viewport {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 const WORLD_WIDTH = 400;
 const WORLD_HEIGHT = 300;
+
+const MAP_VIEWPORT: Viewport = {
+  minX: 0,
+  maxX: WORLD_WIDTH,
+  minY: 0,
+  maxY: WORLD_HEIGHT,
+};
+
+function isVesselInsideViewport(vessel: VesselState, viewport: Viewport) {
+  return (
+    vessel.x >= viewport.minX &&
+    vessel.x <= viewport.maxX &&
+    vessel.y >= viewport.minY &&
+    vessel.y <= viewport.maxY
+  );
+}
 
 function projectVesselToCanvas(
   vessel: VesselState,
@@ -29,6 +59,30 @@ function projectVesselToCanvas(
     x: padding + (vessel.x / WORLD_WIDTH) * usableWidth,
     y: padding + (vessel.y / WORLD_HEIGHT) * usableHeight,
   };
+}
+
+function getVesselColor(vessel: VesselState, isSelected: boolean): string {
+  if (isSelected) {
+    return "#facc15";
+  }
+
+  if (vessel.isStale) {
+    return "#f97316";
+  }
+
+  if (hasRestrictedZoneWarning(vessel)) {
+    return "#ef4444";
+  }
+
+  if (isLowFuel(vessel)) {
+    return "#fb7185";
+  }
+
+  if (isSignalDegraded(vessel)) {
+    return "#a78bfa";
+  }
+
+  return "#38bdf8";
 }
 
 function drawGrid(
@@ -60,6 +114,10 @@ function drawGrid(
 
   context.strokeStyle = "rgba(125, 211, 252, 0.35)";
   context.strokeRect(32, 32, canvas.width - 64, canvas.height - 64);
+
+  context.fillStyle = "rgba(226, 232, 240, 0.65)";
+  context.font = "12px system-ui";
+  context.fillText("simulation map viewport", 42, canvas.height - 42);
 }
 
 function drawVessel(
@@ -69,25 +127,13 @@ function drawVessel(
   isSelected: boolean,
 ) {
   const point = projectVesselToCanvas(vessel, canvas);
-
-  context.beginPath();
-  context.arc(point.x, point.y, isSelected ? 7 : 5, 0, Math.PI * 2);
-
-  if (vessel.isStale) {
-    context.fillStyle = "#f97316";
-  } else if (isSelected) {
-    context.fillStyle = "#facc15";
-  } else {
-    context.fillStyle = "#38bdf8";
-  }
-
-  context.fill();
+  const color = getVesselColor(vessel, isSelected);
 
   const headingRadians = (vessel.heading * Math.PI) / 180;
-  const headingLength = isSelected ? 18 : 12;
+  const headingLength = isSelected ? 22 : 15;
 
-  context.strokeStyle = vessel.isStale ? "#fed7aa" : "#bae6fd";
-  context.lineWidth = 2;
+  context.strokeStyle = color;
+  context.lineWidth = isSelected ? 3 : 2;
   context.beginPath();
   context.moveTo(point.x, point.y);
   context.lineTo(
@@ -96,13 +142,78 @@ function drawVessel(
   );
   context.stroke();
 
+  context.beginPath();
+  context.arc(point.x, point.y, isSelected ? 7 : 5, 0, Math.PI * 2);
+  context.fillStyle = color;
+  context.fill();
+
+  if (vessel.isStale) {
+    context.strokeStyle = "rgba(251, 146, 60, 0.9)";
+    context.lineWidth = 2;
+    context.setLineDash([4, 4]);
+    context.beginPath();
+    context.arc(point.x, point.y, 11, 0, Math.PI * 2);
+    context.stroke();
+    context.setLineDash([]);
+  }
+
   if (isSelected) {
     context.strokeStyle = "#facc15";
     context.lineWidth = 2;
     context.beginPath();
-    context.arc(point.x, point.y, 12, 0, Math.PI * 2);
+    context.arc(point.x, point.y, 15, 0, Math.PI * 2);
     context.stroke();
+
+    context.fillStyle = "rgba(250, 204, 21, 0.95)";
+    context.font = "13px system-ui";
+    context.fillText(vessel.vesselId, point.x + 12, point.y - 12);
   }
+}
+
+function drawLegend(context: CanvasRenderingContext2D) {
+  const items = [
+    ["active", "#38bdf8"],
+    ["selected", "#facc15"],
+    ["stale", "#f97316"],
+    ["low fuel", "#fb7185"],
+    ["signal", "#a78bfa"],
+    ["restricted", "#ef4444"],
+  ];
+
+  const startX = 16;
+  let y = 48;
+
+  context.font = "12px system-ui";
+
+  for (const [label, color] of items) {
+    context.fillStyle = color;
+    context.beginPath();
+    context.arc(startX, y - 4, 5, 0, Math.PI * 2);
+    context.fill();
+
+    context.fillStyle = "rgba(226, 232, 240, 0.85)";
+    context.fillText(label, startX + 14, y);
+
+    y += 18;
+  }
+}
+
+function drawDebugOverlay(
+  context: CanvasRenderingContext2D,
+  fps: number,
+  drawnVessels: number,
+  totalVessels: number,
+) {
+  context.fillStyle = "rgba(15, 23, 42, 0.72)";
+  context.fillRect(12, 12, 190, 24);
+
+  context.fillStyle = "rgba(226, 232, 240, 0.92)";
+  context.font = "13px system-ui";
+  context.fillText(
+    `FPS: ${fps} | drawn: ${drawnVessels}/${totalVessels}`,
+    20,
+    29,
+  );
 }
 
 export function CanvasMap({
@@ -113,6 +224,10 @@ export function CanvasMap({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const selectedVesselIdRef = useRef<string | null>(selectedVesselId);
 
+  const fpsRef = useRef(0);
+  const frameCountRef = useRef(0);
+  const lastFpsUpdateRef = useRef(performance.now());
+
   useEffect(() => {
     selectedVesselIdRef.current = selectedVesselId;
   }, [selectedVesselId]);
@@ -120,24 +235,38 @@ export function CanvasMap({
   useEffect(() => {
     let animationFrameId = 0;
 
-    function render() {
+    function render(now: number) {
       const canvas = canvasRef.current;
+
       if (!canvas) {
         animationFrameId = window.requestAnimationFrame(render);
         return;
       }
 
       const context = canvas.getContext("2d");
+
       if (!context) {
         animationFrameId = window.requestAnimationFrame(render);
         return;
       }
 
+      frameCountRef.current += 1;
+
+      if (now - lastFpsUpdateRef.current >= 1000) {
+        fpsRef.current = frameCountRef.current;
+        frameCountRef.current = 0;
+        lastFpsUpdateRef.current = now;
+      }
+
       drawGrid(context, canvas);
 
-      const vessels = Array.from(liveStoreRef.current.vesselsById.values());
+      const allVessels = Array.from(liveStoreRef.current.vesselsById.values());
 
-      for (const vessel of vessels) {
+      const visibleVessels = allVessels.filter((vessel) =>
+        isVesselInsideViewport(vessel, MAP_VIEWPORT),
+      );
+
+      for (const vessel of visibleVessels) {
         drawVessel(
           context,
           canvas,
@@ -146,9 +275,14 @@ export function CanvasMap({
         );
       }
 
-      context.fillStyle = "rgba(226, 232, 240, 0.9)";
-      context.font = "14px system-ui";
-      context.fillText(`vessels: ${vessels.length}`, 16, 24);
+      drawLegend(context);
+
+      drawDebugOverlay(
+        context,
+        fpsRef.current,
+        visibleVessels.length,
+        allVessels.length,
+      );
 
       animationFrameId = window.requestAnimationFrame(render);
     }
@@ -162,6 +296,7 @@ export function CanvasMap({
 
   function handleCanvasClick(event: React.MouseEvent<HTMLCanvasElement>) {
     const canvas = canvasRef.current;
+
     if (!canvas) {
       return;
     }
@@ -174,7 +309,9 @@ export function CanvasMap({
     const clickX = (event.clientX - rect.left) * scaleX;
     const clickY = (event.clientY - rect.top) * scaleY;
 
-    const vessels = Array.from(liveStoreRef.current.vesselsById.values());
+    const vessels = Array.from(
+      liveStoreRef.current.vesselsById.values(),
+    ).filter((vessel) => isVesselInsideViewport(vessel, MAP_VIEWPORT));
 
     let nearestVessel: VesselState | null = null;
     let nearestDistance = Number.POSITIVE_INFINITY;

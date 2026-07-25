@@ -84,3 +84,21 @@ WebSocketTelemetryBroadcaster
     ↓
 Browser / dashboard clients
 ```
+
+## Frontend Rendering Performance
+
+The React dashboard is designed to handle live vessel telemetry without forcing React to re-render on every incoming message.
+
+Current rendering strategy:
+
+```text
+WebSocket message
+    ↓
+parse telemetry snapshot
+    ↓
+write vessel data into useRef store
+    ↓
+Canvas reads latest vessel state during requestAnimationFrame
+    ↓
+React state updates only at low frequency for UI counters
+```
